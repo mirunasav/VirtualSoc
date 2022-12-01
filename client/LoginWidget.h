@@ -8,10 +8,12 @@
 
 #include <QLineEdit>
 #include <QPushButton>
-#include "MainWindow.h"
 #include "QLabel"
 
 class LoginWidget : public QWidget {
+    Q_OBJECT
+
+
 private slots:
     //evenimentul care se intampla cand apas login : e trimis un request catre server;
     //                                                verific daca datele sunt ok
@@ -24,7 +26,6 @@ private slots:
     void onSignUp();
 
 private:
-    MainWindow * pParent { nullptr }; //pointer la parinte
 
     QLabel *pWidgetTitle {nullptr};
     QLabel *pUsernameLabel {nullptr};
@@ -49,7 +50,7 @@ private:
 
 signals:
     //semnale pe care le trimit daca am pus userul si parola corecte;
-    void LoginSuccess();
+    void loginSuccess();
 
 
 
@@ -57,7 +58,7 @@ signals:
 public:
     //costantele:
     //constantele de text
-    constexpr static const char *pTitleLabelText = "Welcome to VirtualSoc ";
+    constexpr static const char *pTitleLabelText = "Welcome to VirtualSoc !";
     constexpr static const char *pUsernameLabelText = "Username : ";
     constexpr static const char *pPasswordLabelText = "Password : ";
     constexpr static const char *pLoginButtonText = "Login";
@@ -77,7 +78,7 @@ public:
 
 public:
     //functiile
-    explicit LoginWidget(MainWindow *pParentWindow);
+   explicit LoginWidget(QWidget *pParentWindow);
 
     //creeaza componentele, conecteaza semnalele de evenimente
     //apeleaza createComponents, settleLayouts,adjustLayouts, styleComponents
@@ -98,7 +99,7 @@ public:
 
 
 
-    ~LoginWidget() override;
+    ~LoginWidget() override = default;
 
 
 };

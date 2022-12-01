@@ -11,12 +11,21 @@
 
 
 class FeedWidget : public QWidget{
+Q_OBJECT
 private:
-    MainWindow * pParent{ nullptr };
+    MainWindow *pParent {nullptr};
 
+    QLayout *pLayout {nullptr};
 public:
-   explicit FeedWidget(MainWindow *);
+    explicit FeedWidget(MainWindow *pParentWindow);
+    void initWidget();
+    void createComponents();
+    void settleComponents();
+
+
+
 };
+
 
 
 #endif //QT1_FEEDWIDGET_H

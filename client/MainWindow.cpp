@@ -19,10 +19,9 @@ MainWindow:: MainWindow (QWidget *parent) :
 void MainWindow :: initWindow(){
     this->resize(MainWindow :: WIDTH, MainWindow ::HEIGHT);
 
+    this->pCentralWidget = new LoginWidget ( this );
     this->pMainLayout = new QVBoxLayout();
     this->setLayout(pMainLayout);
-
-    this->pCentralWidget = new LoginWidget(this);
     pMainLayout->addWidget(pCentralWidget);
     this->setWindowTitle(pWindowTitle);
 
@@ -33,8 +32,9 @@ void MainWindow::swapWidgetsLoginSuccess() {
     this->pCentralWidget = new FeedWidget(this);//setez un feed widget ca ativ
 
     //in loc de setCentralWidget
-    this->pMainLayout = new QVBoxLayout();
-    this->setLayout(pMainLayout);
+//    this->pMainLayout = new QVBoxLayout();
+//    this->setLayout(pMainLayout);
+    this->pMainLayout->removeWidget(pOldWidget);
     pMainLayout->addWidget(pCentralWidget);//activez widgetul
 
     pOldWidget->hide();

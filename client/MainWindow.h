@@ -8,6 +8,7 @@
 
 #include <QVBoxLayout>
 #include <QWidget>
+#include "LoginWidget.h"
 //construiesc fereastra mare si fac swap intre login si aplicatie
 //fac evenimentele 'swapWidgetsLoginSuccess' si 'swapWidgetsUserDisconnect'
 //pCentral widget are widgetul activ
