@@ -13,8 +13,9 @@ find_package(Qt6 COMPONENTS
   Widgets
   REQUIRED)
 
-add_executable(client client/MainWindow.cpp client/MainWindow.h client/client.cpp client/FeedWidget.cpp client/FeedWidget.h client/LoginWidget.cpp client/LoginWidget.h)
-add_executable(server  server/server.cpp)
+add_executable(client client/MainWindow.cpp client/MainWindow.h client/client.cpp client/AppHomeWidget.cpp client/AppHomeWidget.h client/LoginWidget.cpp client/LoginWidget.h client/FeedWidget.cpp client/FeedWidget.h client/ActionsWidget.cpp client/ActionsWidget.h NotLoggedIn.cpp NotLoggedIn.h server/Server.cpp server/Server.h server/ClientThread.cpp server/ClientThread.h common/common.cpp common/common.h client/ServerConnection.cpp client/ServerConnection.h )
+add_executable(server server/Server.cpp server/Server.h server/ClientThread.cpp server/ClientThread.h
+                                                                    server/server_main.cpp)
 
 target_link_libraries(client
   Qt::Core

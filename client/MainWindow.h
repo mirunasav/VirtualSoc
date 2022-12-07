@@ -20,6 +20,8 @@ public slots:
     //slot : function that is called in response to a particular signal
     void swapWidgetsLoginSuccess();
     void swapWidgetsUserDisconnect();
+    void swapWidgetsSkip();
+
 
 public:
     static char const * pWindowTitle;

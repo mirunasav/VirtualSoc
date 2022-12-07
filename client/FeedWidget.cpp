@@ -1,29 +1,33 @@
 //
-// Created by loghin on 01/12/22.
+// Created by mrnk on 12/2/22.
 //
 
+#include <QVBoxLayout>
 #include "FeedWidget.h"
-#include <qwidget.h>
-#include <QStyleOption>
-
-
-FeedWidget:: FeedWidget(MainWindow * pParentWindow)  :
-        QWidget ( pParentWindow ),
-        pParent ( pParentWindow ) {
+FeedWidget:: FeedWidget(QWidget *pParentWindow):
+        QWidget(pParentWindow){
     this->initWidget();
-}
-
-void FeedWidget ::initWidget() {
-    this->createComponents();
-    this->settleComponents();
-}
-
-void FeedWidget::createComponents() {
-    this->pLayout = new QHBoxLayout(this);
 
 }
-
-void FeedWidget ::settleComponents() {
+void FeedWidget::initWidget()
+{
+   QPalette pal = QPalette();
+   pal.setColor(QPalette::Window, Qt::white);
+   this->setAutoFillBackground(true);
+   this->setPalette(pal);
+   this->show();
+   createComponents();
+   settleLayouts();
+}
+void FeedWidget::createComponents()
+{
+    this->pLayout = new QVBoxLayout(this);
 
 }
+void FeedWidget::settleLayouts()
+{
+    this->setLayout(this->pLayout);
 
+
+}
+FeedWidget::~FeedWidget() = default;

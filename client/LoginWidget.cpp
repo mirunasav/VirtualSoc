@@ -1,14 +1,14 @@
-//
-// Created by loghin on 01/12/22.
-//
+
 
 #include "LoginWidget.h"
 #include "MainWindow.h"
 
 #include <QKeyEvent>
+#include <QMessageBox>
 
-LoginWidget ::LoginWidget(QWidget *pParentWindow):
-                        QWidget(pParentWindow) {
+LoginWidget ::LoginWidget(QWidget *pParent):
+                        QWidget(pParent)
+{
     this->initWidget();
 
 }
@@ -18,30 +18,28 @@ void LoginWidget ::initWidget() {
     this->settleLayouts();
     this->adjustLayouts();
 
-    //scriu cu bulinute parola
     this->pPasswordTextBox->setEchoMode(QLineEdit:: Password);
-
     //conectare componente:
     //daca apas login -> onConfirmLogin
     //if LoginSuccess -> MainWindow:: swapWidgetsLoginSuccess
-
     //daca apas signup -> onSignUp
 
-    connect(this->pLoginButton, SIGNAL(clicked()), this, SLOT(onConfirmLogin()));
+    //connect(this->pLoginButton, SIGNAL(clicked()), this, SLOT(onConfirmLogin()));
+    //in varianta de mai sus, nu verifica daca exista semnalul respectiv; in varianta de mai jos, da, e mai safe
+    connect(this->pLoginButton, &QPushButton :: clicked, this, &LoginWidget ::onConfirmLogin);
     connect(this, SIGNAL(loginSuccess()), this->parent(), SLOT(swapWidgetsLoginSuccess()));
-    connect(this->pSignUpButton, SIGNAL(clicked()), this, SLOT(onSignUp()));
+    connect(this->pSignUpButton, & QPushButton :: clicked, [this]{
+        this->onSignUp();
+    });//cu lambda functii
 
-//    connect(this->pSignUpButton, & QPushButton :: clicked, [this]{
-//        this->onSignUp();
-//    });
-//
-//    connect (this->pSignUpButton, & QPushButton :: clicked, this, & LoginWidget :: onSignUp);
+    connect(this->pContinueWithoutLogginInButton, &QPushButton ::clicked, [this]{
+        this->onSkip();
+    });
+    connect(this, SIGNAL(notLoggedIn()), this->parent(), SLOT(swapWidgetsSkip()));
 
     this->styleComponents();
-
     //aliniez titlul pe centru
     this->pLoginLayout->setAlignment(this->pWidgetTitle, Qt::AlignCenter);
-
 
 }
 
@@ -62,9 +60,15 @@ void LoginWidget ::createComponents() {
 
     this->pLoginButton = new QPushButton(LoginWidget ::pLoginButtonText,this);
     this->pSignUpButton = new QPushButton (LoginWidget ::pSignUpButtonText, this);
+    this->pContinueWithoutLogginInButton = new QPushButton(LoginWidget :: pContinueWithoutLogginInButtonText, this);
 
-    this->pButtonsLayout = new QHBoxLayout(nullptr);
-    this->pButtonsLayout ->setAlignment(Qt::AlignRight);
+    this->pButtonsLayout = new QVBoxLayout(nullptr);
+    this->pButtonsLayout->setAlignment(Qt::AlignRight);
+
+    this->pLoginButtonsLayout = new QHBoxLayout(nullptr);
+    this->pLoginButtonsLayout ->setAlignment(Qt::AlignRight);
+
+
 
 }
 
@@ -87,8 +91,11 @@ void LoginWidget ::settleLayouts() {
 
     this->pLoginLayout->addItem(this->pButtonsLayout);
 
-    this->pButtonsLayout->addWidget(this->pLoginButton);
-    this->pButtonsLayout->addWidget(this->pSignUpButton);
+    this->pButtonsLayout->addItem(this->pLoginButtonsLayout);
+    this->pButtonsLayout->addWidget(this->pContinueWithoutLogginInButton);
+
+    this->pLoginButtonsLayout->addWidget(this->pLoginButton);
+    this->pLoginButtonsLayout->addWidget(this->pSignUpButton);
 }
 
 
@@ -104,17 +111,29 @@ void LoginWidget::adjustLayouts() {
 
 }
 void LoginWidget ::styleComponents() {
-    //daca vr sa fac styling in CSS la componente
+    //daca vr sa fac styling in CSS la componente; aparent nu e nevoie, face qt singur
 
 }
 
 void LoginWidget::onConfirmLogin() {
-    emit this->loginSuccess();
+    if(validateInput()){
+        emit this->loginSuccess();
+    }
+
 }
 
 void LoginWidget ::onSignUp() {
+    //verific daca usernameul este valabil; daca este, atunci apare un pop up cu
+    //"account created" si apoi fac login;
+    if(validateInput())
+        this->notificationPopUp(LoginWidget::pMessageAccountCreated);
 
 }
+
+void LoginWidget::onSkip() {
+    emit this->notLoggedIn();
+}
+
 void LoginWidget:: enterKeyPressEvent(QKeyEvent * event)
 {
     if( event ->key() == Qt::Key_Return || event ->key() == Qt::Key_Enter)
@@ -125,6 +144,13 @@ void LoginWidget:: enterKeyPressEvent(QKeyEvent * event)
 
 bool LoginWidget::validateInput() {
     return true;
+}
+
+void LoginWidget::notificationPopUp(const char *message) {
+    //apare un text box pop up; parintele este this
+    //titlul este ..., mesajul este message, un buton de ok
+    QMessageBox::information(this, " ", message,QMessageBox::Ok);
+
 }
 
 

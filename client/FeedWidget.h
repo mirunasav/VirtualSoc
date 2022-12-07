@@ -1,31 +1,27 @@
 //
-// Created by loghin on 01/12/22.
+// Created by mrnk on 12/2/22.
 //
 
 #ifndef QT1_FEEDWIDGET_H
 #define QT1_FEEDWIDGET_H
 
 
-#include "MainWindow.h"
 #include <QWidget>
-
+#include <QPushButton>
 
 class FeedWidget : public QWidget{
-Q_OBJECT
+    Q_OBJECT
 private:
-    MainWindow *pParent {nullptr};
+    QLayout *pLayout{nullptr};
 
-    QLayout *pLayout {nullptr};
 public:
-    explicit FeedWidget(MainWindow *pParentWindow);
+    explicit FeedWidget(QWidget *pParentWindow);
     void initWidget();
+    ~FeedWidget() override;
     void createComponents();
-    void settleComponents();
-
-
+    void settleLayouts();
 
 };
-
 
 
 #endif //QT1_FEEDWIDGET_H

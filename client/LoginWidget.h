@@ -1,6 +1,4 @@
-//
-// Created by loghin on 01/12/22.
-//
+
 
 #ifndef QT1_LOGINWIDGET_H
 #define QT1_LOGINWIDGET_H
@@ -9,6 +7,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include "QLabel"
+#include "MainWindow.h"
+
 
 class LoginWidget : public QWidget {
     Q_OBJECT
@@ -17,13 +17,15 @@ class LoginWidget : public QWidget {
 private slots:
     //evenimentul care se intampla cand apas login : e trimis un request catre server;
     //                                                verific daca datele sunt ok
-    //                                                daca sunt ok, intru in app -> FeedWidget
+    //                                                daca sunt ok, intru in app -> AppHomeWidget
     //                                                altfel, deny login
 
     void onConfirmLogin();
 
     //ce se intampla cand apas SignUp : verific in server daca pot crea contul
     void onSignUp();
+
+    void onSkip();
 
 private:
 
@@ -38,10 +40,12 @@ private:
     QLayout *pCredentialsLayout {nullptr};
     QLayout *pLabelLayout {nullptr};
     QLayout *pTextBoxLayout {nullptr};
+    QLayout *pLoginButtonsLayout {nullptr};
     QLayout *pButtonsLayout {nullptr};
 
     QPushButton *pLoginButton {nullptr};
     QPushButton *pSignUpButton {nullptr};
+    QPushButton *pContinueWithoutLogginInButton {nullptr};
 
 
     bool validateInput(); //validez inputul : verific ori daca userul exista deja,
@@ -51,6 +55,7 @@ private:
 signals:
     //semnale pe care le trimit daca am pus userul si parola corecte;
     void loginSuccess();
+    void notLoggedIn();
 
 
 
@@ -63,6 +68,7 @@ public:
     constexpr static const char *pPasswordLabelText = "Password : ";
     constexpr static const char *pLoginButtonText = "Login";
     constexpr static const char *pSignUpButtonText = "Sign Up";
+    constexpr static const char *pContinueWithoutLogginInButtonText = "Skip";
 
     constexpr static const char *pUsernameLabelEmpty = "Please enter username!";
     constexpr static const char *pPasswordLabelEmpty = "Please enter password!";
@@ -70,7 +76,7 @@ public:
     constexpr static const char *pMessageUserAlreadyConnected = "User is already connected!";
 
     constexpr static const char *pMessageSignUpFailed = "Username is taken! Choose another one.";
-    constexpr static const char *pMessageAccountCreated = "Your account was creted!";
+    constexpr static const char *pMessageAccountCreated = "Your account was created!";
     constexpr static const char *pMessageInvalidCharacters = "Username field contains invalid characters!";
 
     constexpr static const char *pServerDown = "Connection to server failed";
@@ -78,7 +84,7 @@ public:
 
 public:
     //functiile
-   explicit LoginWidget(QWidget *pParentWindow);
+   explicit LoginWidget(QWidget *);
 
     //creeaza componentele, conecteaza semnalele de evenimente
     //apeleaza createComponents, settleLayouts,adjustLayouts, styleComponents
