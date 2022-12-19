@@ -30,4 +30,3 @@ void FeedWidget::settleLayouts()
 
 
 }
-FeedWidget::~FeedWidget() = default;

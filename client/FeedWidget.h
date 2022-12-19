@@ -17,9 +17,9 @@ private:
 public:
     explicit FeedWidget(QWidget *pParentWindow);
     void initWidget();
-    ~FeedWidget() override;
     void createComponents();
     void settleLayouts();
+    ~FeedWidget() override = default;
 
 };
 

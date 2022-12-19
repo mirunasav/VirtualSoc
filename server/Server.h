@@ -31,6 +31,7 @@ public:
         sockaddr_in clientAddress;
 
         Socket socket;
+        bool operator == ( const Server::ConnectedClientData & ) const ;
 
     };
 
@@ -39,6 +40,7 @@ public:
 private:
     //constructor default si privat, nu vrem sa construim de oriunde,
     //ci doar intern si sa-l dam mai departe cu getInstance();
+    constexpr static const char * pUsersFile = "../server/users.txt";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -71,13 +73,15 @@ public:
     //verificam daca am primit un user si o parola valide;
     //daca sunt ok, ne tb si threadul ; salvam datele userului
 
-    bool checkUser(std::string &, std:: string &, pthread_t);
+    bool checkLogin(std::string &, std:: string &, pthread_t);
 
-    bool createUser(std::string &, std:: string &);
+    bool createUser( std::string &,  std:: string &);
 
     //deconectam de la threadul respectiv clientul
     //returneaza referinta, in caz ca vrem sa folosim intr-o comanda inlantuita
     Server &disconnect (pthread_t);
+
+    Server &logout (pthread_t); //cand facem logout
 
     Server & addClientData (const ConnectedClientData &);
 
@@ -86,6 +90,8 @@ public:
     std::list <ConnectedClientData> getClientThreadDataInstant () const;
 
     Socket getClientSocket(pthread_t) const;
+
+    void writeToConnectedClientData(std::string, pthread_t);
 
     std::string getClientUsername(pthread_t);
 

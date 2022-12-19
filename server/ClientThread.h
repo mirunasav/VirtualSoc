@@ -37,11 +37,13 @@ public:
 
     //treat requests o sa le fac intr un request handler mai incolo;
 
-    void treatRequest(common::ClientRequests);
+    int treatRequest(common::ClientRequests);
+
+    void treatSignUp() const;
+
+    void treatLogout() const;
 
     void treatLogin();
-
-    bool checkUser (  std::string &,  std::string & ) ;
 
     bool createUser (  std::string &,  std::string & );
 

@@ -23,6 +23,7 @@ void MainWindow :: initWindow(){
 
     this->pCentralWidget = new LoginWidget ( this );
     this->pMainLayout = new QVBoxLayout();
+
     this->setLayout(pMainLayout);
     pMainLayout->addWidget(pCentralWidget);
     this->setWindowTitle(pWindowTitle);
@@ -53,9 +54,6 @@ void MainWindow ::swapWidgetsUserDisconnect() {
     this->pMainLayout = new QVBoxLayout();
     this->setLayout(pMainLayout);
     pMainLayout->addWidget(pCentralWidget);//activez widgetul
-
-    //pe urma tb sa fac ceva aici ca sa deconectez userul
-    /*...*/
 
     this->setWindowTitle(MainWindow:: pWindowTitle);
 

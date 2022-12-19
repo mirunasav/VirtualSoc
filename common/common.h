@@ -20,7 +20,7 @@ namespace common {
         //cand vrem sa facem login
         REQUEST_LOGIN = 300,
 
-        REQUEST_CREATE_ACCOUNT  = 305,
+        REQUEST_SIGN_UP  = 305,
 
         //refresh la lista de useri
         REQUEST_REFRESH_USERS = 310,
@@ -31,7 +31,11 @@ namespace common {
 
         REQUEST_NEW_POST = 330,
 
-        REQUEST_ADD_FRIEND = 335
+        REQUEST_ADD_FRIEND = 335,
+
+        REQUEST_LOGOUT = 340,
+
+        NO_REQUEST = 400
 
     };
 
@@ -44,8 +48,10 @@ namespace common {
 
         CREATE_ACCOUNT_USERNAME_EXISTS = 402,
 
+        CREATE_ACCOUNT_SUCCESS = 403,
+
         //cand apesi pe login desi nu esti logat
-        ACCES_DENIED_NOT_LOGGED_IN = 403
+        ACCES_DENIED_NOT_LOGGED_IN = 404
     };
 
 
@@ -53,26 +59,22 @@ namespace common {
     constexpr static ushort SERVER_PORT = 56000;
     constexpr static const char * SERVER_IP = LOCALHOST;
 
+    constexpr static int READ_ERROR = -1;
+    constexpr static int DISCONNECT = -2;
+    constexpr static int WRITE_ERROR = -3;
 
-    static void writeBuffer(int fd,  char * pBuf){
-        int bufLen = strlen(pBuf);
-        write(fd, & bufLen, 4);
-        write(fd, pBuf, bufLen);
-    }
 
-    static void readBuffer(int fd, void * pBuf){
+    ClientRequests readRequest(Socket socket);
+    ServerResponse readResponse (Socket socket);
+    std::string readString(Socket socket );
+    void readBuffer(int fd, void * pBuf);
+    int readBufferInt(int fd, int & pBuf);
 
-        memset(pBuf, 0, BUFFER_LENGTH);
-        int bufLen;
-        int retVal = read(fd, & bufLen, 4);
-        read(fd, pBuf, bufLen);
-    }
-    static void readBufferInt(int fd, int & pBuf){
-
-        if(read(fd, &pBuf, sizeof(int) == -1))
-            //aruncam o eroare
-            printf("eroare la readint\n");
-    }
+    void writeBuffer(int fd,  char * pBuf);
+    void writeRequestNumber(Socket socket, int requestNumber);
+    void writeRequest ( Socket socket, ClientRequests request);
+    void writeString (Socket socket, const std::string &message);
+    void writeResponse (Socket , ServerResponse );
 
 };
 

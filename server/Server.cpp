@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <list>
+#include <fstream>
+#include <iostream>
 
 #include "ClientThread.h"
 
@@ -159,27 +161,101 @@ Socket Server::getClientSocket(pthread_t threadID) const {
     return s;
 }
 
-bool Server::checkUser(std::string & username , std::string & password, pthread_t) {
+bool Server::checkLogin(std::string & username , std::string & password, pthread_t requestThreadID) {
+    pthread_mutex_lock(&usersFileLock);
+
+    std::ifstream usersFile;
+    usersFile.open(Server::pUsersFile);
+
+    std::string usernameFromFile, passwordFromFile;
+
+    while (usersFile >>usernameFromFile >>passwordFromFile)
+    {
+        if(username == usernameFromFile && password == passwordFromFile) { //scriu in connectedClientData
+            this->writeToConnectedClientData(username, requestThreadID);
+            pthread_mutex_unlock(&usersFileLock);
+            usersFile.close();
+            return true;
+        }
+
+    }
+
+    pthread_mutex_unlock(&usersFileLock);
+    usersFile.close();
     return false;
 }
-/*
+
+bool Server::createUser( std::string &username,  std::string &password) {
+    pthread_mutex_lock(&usersFileLock);
+
+    std::fstream usersFile;
+    usersFile.open(Server::pUsersFile);
+
+    std::string usernameFromFile, passwordFromFile;
+
+    while (usersFile >>usernameFromFile >>passwordFromFile)
+    {
+        if(usernameFromFile == username) //daca exista deja un username la fel
+        {
+            pthread_mutex_unlock( & usersFileLock );
+            usersFile.close();
+            return false;
+        }
+    }
+
+    usersFile.close();
+
+    usersFile.open(Server::pUsersFile ,  std::iostream::app);
+
+    usersFile << username.c_str() <<' ' << password.c_str() << '\n';
+    return true;
+}
+
+
 Server &Server::disconnect(pthread_t threadID) {
     pthread_mutex_lock( & threadListLock );
 
 
-    for (  auto & clientData : this->clientList )
+    for (  const auto & clientData : this->clientList )
         if ( clientData.threadID == threadID ) {
             close ( clientData.socket );
             this->clientList.remove( clientData );
             break;
         }
 
-}*/
+    pthread_mutex_unlock(&threadListLock);
 
-bool Server::createUser(std::string &, std::string &) {
-    return false;
+    return *this;
+
 }
 
+//scoatem clientul din lista, dar nu inchidem socketul
+Server &Server::logout(pthread_t threadID) {
+    pthread_mutex_lock( & threadListLock );
+
+
+    for (  const auto & clientData : this->clientList )
+        if ( clientData.threadID == threadID ) {
+            this->clientList.remove( clientData );
+            break;
+        }
+
+    pthread_mutex_unlock(&threadListLock);
+
+    return *this;
+}
+
+void Server::writeToConnectedClientData(std::string username, pthread_t requestThreadID)
+{
+    pthread_mutex_lock(&threadListLock); //blocam lista de threaduri
+
+    for (auto & clientData : this->clientList)
+    {
+        if(clientData.threadID == requestThreadID)
+            clientData.username = username;
+    }
+    pthread_mutex_unlock(&threadListLock);
+}
 
 
 std::string Server::getClientUsername(pthread_t) {
@@ -187,3 +263,7 @@ std::string Server::getClientUsername(pthread_t) {
 }
 
 
+
+bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {
+    return this->threadID == other.threadID;
+}

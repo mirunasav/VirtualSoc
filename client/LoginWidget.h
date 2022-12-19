@@ -101,9 +101,7 @@ public:
     void notificationPopUp(char const * ) ; //cand primesc request / mesaj
 
 
-    void enterKeyPressEvent(QKeyEvent * event) ;//cand apas enter fac login
-
-
+    void keyPressEvent(QKeyEvent * event) override;//cand apas enter fac login
 
     ~LoginWidget() override = default;
 

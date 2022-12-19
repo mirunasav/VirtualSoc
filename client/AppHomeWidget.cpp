@@ -7,6 +7,7 @@
 #include <QStyleOption>
 #include "FeedWidget.h"
 #include "ActionsWidget.h"
+#include "FriendsMenuWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -39,6 +40,7 @@ void AppHomeWidget::createComponents() {
 
 void AppHomeWidget ::settleLayouts() {
     this->setLayout(this->pMainLayout);
+
     this->pMainLayout->addWidget(this->pCentralWidget);
     this->pCentralWidget->setLayout(this->pLayout);
    // this->pLayout->addWidget(this->pActionsWidget);
@@ -67,5 +69,18 @@ void AppHomeWidget::swapWidgetsLogOut() {
     delete pOldWidget;
 }
 
-AppHomeWidget::~AppHomeWidget() = default;
+void AppHomeWidget::swapWidgetsFriendsMenu() {
+
+    QWidget *pOldWidget = this->pFeedWidget;
+
+    this->pFeedWidget = new FriendsMenuWidget(this);
+
+    this->pSplitter->replaceWidget(1, this->pFeedWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+
+}
+
+
 

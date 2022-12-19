@@ -2,9 +2,12 @@
 
 #include "LoginWidget.h"
 #include "MainWindow.h"
+#include "ServerConnection.h"
 
 #include <QKeyEvent>
 #include <QMessageBox>
+
+using namespace common;
 
 LoginWidget ::LoginWidget(QWidget *pParent):
                         QWidget(pParent)
@@ -116,8 +119,37 @@ void LoginWidget ::styleComponents() {
 }
 
 void LoginWidget::onConfirmLogin() {
-    if(validateInput()){
-        emit this->loginSuccess();
+    if(!validateInput())
+        return;
+    //daca inputul e bun, trebuie sa verificam in fisierul cu username si parola
+    //daca le gasim pe cele introduse de user
+
+    ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
+
+    if(!ServerConnection::getInstance().isConnected()) //nu a mers conexiunea
+    {
+        this->notificationPopUp(LoginWidget::pServerDown);
+        return;
+    }
+    std::string username = this->pUsernameTextBox->text().toStdString().c_str();
+    std::string password = this->pPasswordTextBox->text().toStdString().c_str();
+
+    writeRequest(ServerConnection::getInstance().getSocket(), ClientRequests ::REQUEST_LOGIN);//scriu ce tip de request este
+    writeString(ServerConnection::getInstance().getSocket(), this->pUsernameTextBox->text().toStdString());//scriu username
+    writeString(ServerConnection::getInstance().getSocket(), this->pPasswordTextBox->text().toStdString());//scriu parola
+
+    ServerResponse response  = common::readResponse(ServerConnection::getInstance().getSocket());
+
+    switch(response)
+    {
+        case ServerResponse::LOGIN_BAD_USER_PASS :
+            this->notificationPopUp(LoginWidget ::pMessageLoginFailed);
+            break;
+        case ServerResponse:: LOGIN_USER_ALREADY_CONNECTED:
+            this->notificationPopUp(LoginWidget :: pMessageUserAlreadyConnected);
+            break;
+        default:
+            emit this->loginSuccess();
     }
 
 }
@@ -125,8 +157,39 @@ void LoginWidget::onConfirmLogin() {
 void LoginWidget ::onSignUp() {
     //verific daca usernameul este valabil; daca este, atunci apare un pop up cu
     //"account created" si apoi fac login;
-    if(validateInput())
-        this->notificationPopUp(LoginWidget::pMessageAccountCreated);
+    if(!validateInput())
+    {
+        return;
+    }
+
+
+    ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
+
+    if(!ServerConnection::getInstance().isConnected()) //nu a mers conexiunea
+    {
+        this->notificationPopUp(LoginWidget::pServerDown);
+        return;
+    }
+
+    std::string username = this->pUsernameTextBox->text().toStdString().c_str();
+    std::string password = this->pPasswordTextBox->text().toStdString().c_str();
+
+    writeRequest(ServerConnection::getInstance().getSocket(), ClientRequests ::REQUEST_SIGN_UP);
+    writeString(ServerConnection::getInstance().getSocket(), this->pUsernameTextBox->text().toStdString());//scriu username
+    writeString(ServerConnection::getInstance().getSocket(), this->pPasswordTextBox->text().toStdString());//scriu parola
+
+    ServerResponse response  = common::readResponse(ServerConnection::getInstance().getSocket());
+
+    switch(response)
+    {
+        case ServerResponse::CREATE_ACCOUNT_USERNAME_EXISTS :
+            this->notificationPopUp(LoginWidget ::pMessageSignUpFailed);
+            break;
+        case ServerResponse:: CREATE_ACCOUNT_SUCCESS:
+            this->notificationPopUp(LoginWidget :: pMessageAccountCreated);
+            emit this->loginSuccess();
+    }
+
 
 }
 
@@ -134,7 +197,7 @@ void LoginWidget::onSkip() {
     emit this->notLoggedIn();
 }
 
-void LoginWidget:: enterKeyPressEvent(QKeyEvent * event)
+void LoginWidget::keyPressEvent(QKeyEvent * event)
 {
     if( event ->key() == Qt::Key_Return || event ->key() == Qt::Key_Enter)
     {
@@ -143,6 +206,17 @@ void LoginWidget:: enterKeyPressEvent(QKeyEvent * event)
 }
 
 bool LoginWidget::validateInput() {
+    //verificam daca vreunul dintre fieldurile username si password sunt empty
+    if(this->pUsernameTextBox->text().isEmpty())
+    {
+        this->notificationPopUp(LoginWidget::pUsernameLabelEmpty);
+        return false;
+    }
+        if(this->pPasswordTextBox->text().isEmpty())
+        {       this->notificationPopUp(LoginWidget::pPasswordLabelEmpty);
+        return false;
+    }
+
     return true;
 }
 

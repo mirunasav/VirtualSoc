@@ -12,20 +12,25 @@ class AppHomeWidget : public QWidget{
 Q_OBJECT
 private slots:
     void swapWidgetsLogOut();
+    void swapWidgetsFriendsMenu();
+
 private:
     QWidget * pCentralWidget {nullptr};
 
-    QLabel *pHomeWidgetTitle {nullptr};
     QLayout *pLayout {nullptr};
     QLayout *pMainLayout {nullptr};
-
+    QLayout *pFriendsMenuLayout {nullptr};
 
     QWidget * pFeedWidget { nullptr };
     QWidget * pActionsWidget { nullptr };
 
+    QLabel *pFriendsMenuLabel {nullptr};
+
     QSplitter *pSplitter {nullptr};
 public:
     constexpr static const char *pHomeWidgetTitleLabel = "Home";
+
+
     explicit AppHomeWidget(QWidget *pParentWindow);
 
     void initWidget();
@@ -36,7 +41,7 @@ public:
 
     void styleComponents();
 
-    ~AppHomeWidget() override;
+    ~AppHomeWidget() override = default;
 
 
 

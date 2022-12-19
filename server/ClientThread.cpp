@@ -7,10 +7,6 @@
 #include "../common/common.h"
 using namespace common;
 
-bool ClientThread::checkUser(std::string & username,  std::string & password)  {
-    return Server::getInstance().checkUser( username, password, this->ID );
-}
-
 ClientThread ::ClientThread(pthread_t threadID) :
             ID(threadID), clientSocket(Server::INVALID_SOCKET){
 
@@ -26,28 +22,86 @@ void ClientThread::main() {
     while(this->clientSocket == Server::INVALID_SOCKET)
         this->acquireSocketFromServer();
 
-    while(true)
+    int status_code = 0;
+    while(status_code != 499)
     {
         //punem intr-un bloc de try si vom arunca exceptii in cas ca apar erori la read/write sau la conexiune
-            readBufferInt(this->clientSocket,ServerResponseInt);
-            this->treatRequest(static_cast <ClientRequests> (ServerResponseInt));
+        status_code = this->treatRequest(common::readRequest(this->clientSocket));
 
     }
     Server::getInstance().disconnect(this->ID);
 }
 
-void ClientThread::treatRequest(common::ClientRequests request) {
+int ClientThread::treatRequest(common::ClientRequests request) {
     switch ( request ) {
-        case common::REQUEST_LOGIN:         return this->treatLogin ();
+        case common::REQUEST_LOGIN:
+            this->treatLogin ();
+            return 200;
+
+        case common::REQUEST_SIGN_UP:
+            this->treatSignUp();
+            return 200;
+
+            //cand se inchide clientul din x / neasteptat, nu din butonul de logout
+        case common::NO_REQUEST :
+            Server::getInstance().disconnect(this->ID);
+            return 499;
+
+            //cand inchid clientul din butonul de logout:
+        case common::REQUEST_LOGOUT:
+            this->treatLogout();
+            this->loggedIn = false;
+            return 401;
 
     }
 }
 
 void ClientThread::treatLogin() {
     //verific daca nu sunt cumva in lista de useri deja conectati
-//verific daca usernameul si parola sunt in fisierul de useri
+    //verific daca usernameul si parola sunt in fisierul de useri
+    std::string username = common::readString(this->clientSocket);
+    std::string password = common::readString (this->clientSocket);
+
+    //verificam daca userul nu e deja conectat
+    for(const auto & connectedClientData : Server::getInstance().getClientThreadDataInstant())
+    {
+        if(!connectedClientData.username.empty() && connectedClientData.username==username){
+            writeResponse(this->clientSocket,common:: ServerResponse :: LOGIN_USER_ALREADY_CONNECTED);
+            return;
+        }
+    }
+
+    //daca nu e conectat deja, verificam fisierul cu parole
+    if(Server::getInstance().checkLogin(username, password, this->ID))
+    {
+        this->loggedIn = true;
+        writeResponse(this->clientSocket, common::ServerResponse::LOGIN_SUCCESS);
+    }
+    else
+     writeResponse(this->clientSocket, common::ServerResponse::LOGIN_BAD_USER_PASS);
+}
+
+
+void ClientThread::treatSignUp() const {
+    std::string username = common::readString(this->clientSocket);
+    std::string password = common::readString (this->clientSocket);
+
+    if(Server::getInstance().createUser(username, password)) //daca a reusit crearea
+        writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_SUCCESS);
+    else
+        writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_USERNAME_EXISTS);
 
 }
+
+void ClientThread::treatLogout() const {
+    Server::getInstance().logout(this->ID);
+}
+
+
+bool ClientThread::createUser(std::string &, std::string &) {
+    return false;
+}
+
 
 
 

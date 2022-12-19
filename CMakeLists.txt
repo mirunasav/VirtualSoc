@@ -13,9 +13,28 @@ find_package(Qt6 COMPONENTS
   Widgets
   REQUIRED)
 
-add_executable(client client/MainWindow.cpp client/MainWindow.h client/client.cpp client/AppHomeWidget.cpp client/AppHomeWidget.h client/LoginWidget.cpp client/LoginWidget.h client/FeedWidget.cpp client/FeedWidget.h client/ActionsWidget.cpp client/ActionsWidget.h NotLoggedIn.cpp NotLoggedIn.h server/Server.cpp server/Server.h server/ClientThread.cpp server/ClientThread.h common/common.cpp common/common.h client/ServerConnection.cpp client/ServerConnection.h )
+add_executable(client client/MainWindow.cpp
+        client/MainWindow.h
+        client/client.cpp
+        client/AppHomeWidget.cpp
+        client/AppHomeWidget.h
+        client/LoginWidget.cpp
+        client/LoginWidget.h
+        client/FeedWidget.cpp
+        client/FeedWidget.h
+        client/ActionsWidget.cpp
+        client/ActionsWidget.h
+        NotLoggedIn.cpp NotLoggedIn.h
+       common/common.cpp common/common.h
+        client/ServerConnection.cpp
+        client/ServerConnection.h
+        client/FriendsMenuWidget.cpp
+        client/FriendsMenuWidget.h
+        client/FriendsListWidget.cpp
+        client/FriendsListWidget.h client/AddFriendsWidget.cpp client/AddFriendsWidget.h)
 add_executable(server server/Server.cpp server/Server.h server/ClientThread.cpp server/ClientThread.h
-                                                                    server/server_main.cpp)
+                                                                    server/server_main.cpp
+        common/common.cpp common/common.h server/ServerExceptions.cpp server/ServerExceptions.h)
 
 target_link_libraries(client
   Qt::Core

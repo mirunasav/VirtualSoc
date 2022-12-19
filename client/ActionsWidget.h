@@ -7,22 +7,30 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QComboBox>
 
 class ActionsWidget: public QWidget{
     Q_OBJECT
 private slots:
     void onMyProfile(); //mergem la profilul nostru si vedem ce am postat
     void onPost(); //deschide un dialogue box (pop up) si putem posta
-    void onAddFriends(); //deschide tot un pop up? poate
     void onSendMessage(); //deschidem o fereastra de messenger
     void onSettings(); //deschidem o fereastra cu setari
     void onLogout(); //deconectez userul de la server si ma intorc la run window
+    void onFriendsButton(); //schimb partea din dreapta, cu widgetul meniului de friends
 
 private:
 
     QPushButton *pMyProfileButton {nullptr};
     QPushButton *pPostButton {nullptr};
-    QPushButton *pAddFriendsButton {nullptr};
+    QPushButton *pFriendsButton {nullptr};
+
+//    QComboBox  *pFriendsMenu {nullptr};
+//    QAction *pSeeRequests {nullptr};
+//    QAction *pAddFriends {nullptr};
+//    QAction *pFriendsList {nullptr};
+
+
     QPushButton *pSendMesssageButton {nullptr};
     QPushButton *pSettingsButton {nullptr};
     QPushButton *pLogoutButton {nullptr};
@@ -31,14 +39,20 @@ private:
 
 signals:
     void loggedOut();
+    void goToFriendsMenu();
+
 public:
     //constantele
     constexpr static const char *pMyProfileButtonText = "My Profile";
     constexpr static const char *pPostButtonText = "New Post";
-    constexpr static const char *pAddFriendsButtonText = "Add Friends";
+    constexpr static const char *pFriendsButtonText = "Friends";
     constexpr static const char *pSendMesssageButtonText = "Send a Message";
     constexpr static const char *pSettingsButtonText = "Settings";
     constexpr static const char *pLogoutButtonText = "Logout";
+
+//    constexpr static const char *pSeeRequestsText = "Requests";
+//    constexpr static const char *pAddFriendsText = "Add Friends";
+//    constexpr static const char *pFriendsListText = "My Friends";
 
 public:
     //functiile
