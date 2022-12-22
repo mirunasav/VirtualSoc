@@ -50,6 +50,13 @@ namespace common {
 
         CREATE_ACCOUNT_SUCCESS = 403,
 
+        ADD_FRIENDS_REQUEST_SENT = 405,
+
+        ADD_FRIENDS_INVALID_USER = 406,
+
+        ADD_FRIENDS_ALREADY_FRIEND = 407,
+
+        ADD_FRIENDS_OWN_USERNAME = 408,
         //cand apesi pe login desi nu esti logat
         ACCES_DENIED_NOT_LOGGED_IN = 404
     };
@@ -63,6 +70,9 @@ namespace common {
     constexpr static int DISCONNECT = -2;
     constexpr static int WRITE_ERROR = -3;
 
+    constexpr static int NORMAL_FRIEND = 1;
+    constexpr static int CLOSE_FRIEND = 2;
+    constexpr static int Acquaintance = 3;
 
     ClientRequests readRequest(Socket socket);
     ServerResponse readResponse (Socket socket);
@@ -75,6 +85,7 @@ namespace common {
     void writeRequest ( Socket socket, ClientRequests request);
     void writeString (Socket socket, const std::string &message);
     void writeResponse (Socket , ServerResponse );
+
 
 };
 

@@ -3,8 +3,12 @@
 //
 
 #include "common.h"
+#include "errors.h"
 #include <string>
+#include <stdexcept>
+
 using namespace common;
+using namespace errors;
 
 void common:: writeRequest ( Socket socket, ClientRequests request)
 {
@@ -17,7 +21,7 @@ void common:: writeRequestNumber(Socket socket, int requestNumber)
 {
     if(write(socket, &requestNumber, sizeof(int)) == -1 )
         //arunc eroare
-        printf("eroare la writeRequestNumber!\n");
+        throwException(errors::writeRequestNumberError);
 }
 
 void common::writeBuffer(int fd,  char * pBuf){
@@ -32,12 +36,12 @@ void common::writeString (Socket socket, const std::string &message)
     int messageLength = static_cast<int> (message.length());
     if(write(socket, &messageLength, sizeof(int)) == -1)
     {
-        printf("eroare la writeString la transmis lungime!\n");
+        printf(errors::writeStringLengthError);
     }
 
     if(write(socket, message.c_str(), messageLength) == -1 )
     {
-        printf("eroare la writeString la transmis string!\n");
+        throwException(errors::writeStringStringError);
     }
 
 }
@@ -85,7 +89,7 @@ std::string common:: readString(Socket socket )
 
     if (read(socket, message.data(),messageLength) == -1)
     {
-        printf("Eroare la citire string!\n");
+        throwException(errors::readStringError);
     }
     message.shrink_to_fit();
     return message;

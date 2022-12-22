@@ -15,25 +15,26 @@ class AddFriendsWidget  : public QWidget {
 Q_OBJECT
 private :
 
-    QLayout *pMainLayout {nullptr};
-    QLayout *pCenterLayout {nullptr};
-    QLayout *pLineEditLayout {nullptr};
-    QLayout *pLabelLayout {nullptr};
-    QLayout *pTextBoxLayout {nullptr};
-    QLayout *pButtonLayout{nullptr};
+  QLayout *pMainLayout {nullptr};
+  QLayout *pSendRequestLayout {nullptr};
+  QLayout *pLineEditLayout {nullptr};
+  QLayout *pButtonLayout {nullptr};
 
-    QPushButton *pSendRequestButton {nullptr};
+  QLabel *pSearchUsernameLabel {nullptr};
 
-    QLabel *pSearchUserLabel {nullptr};
+  QLineEdit *pUsernameLineEdit {nullptr};
 
-    QLineEdit *pSendRequestTextBox {nullptr};
+  QPushButton *pSendRequestButton {nullptr};
+
 private slots:
     void onSendRequest();
 
 public:
     constexpr static const char *pSendRequestButtonText = "Send Request";
-    constexpr static const char *pSearchUserText = "Send Request";
+    constexpr static const char *pSearchUserText = "Search User :  ";
     constexpr static const char *pInvalidUserText= "Error! Username Invalid";
+    constexpr static const char *pOwnUsername= "Error! You cannot enter your own username!";
+    constexpr static const char *pUserAlreadyFriend= "Error! Username already in your friend List";
     constexpr static const char *pRequestSentText= "Your Friend Request Has Been Sent!";
 
     explicit AddFriendsWidget (QWidget *pParentWindow);
@@ -43,8 +44,6 @@ public:
     void createComponents();
 
     void settleLayouts();
-
-    bool userExists();
 
     void notificationPopUp(const char * message);
     ~AddFriendsWidget() override = default;

@@ -184,6 +184,45 @@ bool Server::checkLogin(std::string & username , std::string & password, pthread
     usersFile.close();
     return false;
 }
+bool Server::checkUserExists(std::string & username) {
+    pthread_mutex_lock(&usersFileLock);
+
+    std::ifstream usersFile;
+    usersFile.open(Server::pUsersFile);
+
+    std::string usernameFromFile, passwordFromFile;
+     while (usersFile >>usernameFromFile >>passwordFromFile)
+    {
+        if(username == usernameFromFile )
+        {
+
+            pthread_mutex_unlock(&usersFileLock);
+            usersFile.close();
+            return true;
+        }
+
+    }
+
+    pthread_mutex_unlock(&usersFileLock);
+    usersFile.close();
+    return false;
+}
+
+
+std::string Server::getUsername(pthread_t ID) const{
+    pthread_mutex_lock ( & threadListLock );
+
+    std::string username = "none"; // o valoare default
+    for ( const auto & clientData : this->clientList)
+        if ( clientData.threadID == ID ) { // cautam username-ul thread-ului cu ID-ul dat
+            username = clientData.username;
+            break;
+        }
+
+    pthread_mutex_unlock( & threadListLock );
+
+    return username;
+}
 
 bool Server::createUser( std::string &username,  std::string &password) {
     pthread_mutex_lock(&usersFileLock);
@@ -208,6 +247,53 @@ bool Server::createUser( std::string &username,  std::string &password) {
     usersFile.open(Server::pUsersFile ,  std::iostream::app);
 
     usersFile << username.c_str() <<' ' << password.c_str() << '\n';
+    pthread_mutex_unlock( & usersFileLock );
+    usersFile.close();
+    return true;
+}
+
+bool Server::addFriend(std::string &requesterUsername, std::string &usernameAdded) {
+ auto requesterFriendListFile =  std::string(Server::pFriendListFiles)
+         .append("/")
+         .append( requesterUsername)
+         .append("_")
+         .append("Friends")
+         .append( ".txt" );
+
+    auto otherFriendListFile =  std::string(Server::pFriendListFiles)
+            .append("/")
+            .append( usernameAdded)
+            .append("_")
+            .append("Friends")
+            .append( ".txt" );
+
+ std::fstream friendListFile;
+
+ //mai intai verific daca nu cumva il am deja ca
+ //deschid fisierul normal, fara sa pot scrie in el
+ friendListFile.open(requesterFriendListFile);
+ std::string usernameFromFile, friendshipType; //1->normal, 2->close friend, 3->cunostinta
+
+    while (friendListFile >> usernameFromFile >> friendshipType)
+    {
+        if(usernameFromFile == usernameAdded) { //e deja in lista
+            friendListFile.close();
+            return false;
+        }
+    }
+    //daca nu l-am gasit, deschid fisierul cu append si il adaug
+    friendListFile.close();
+    friendListFile.open(requesterFriendListFile, std::iostream::app);
+    friendListFile << usernameAdded.c_str()<<' '<<common::NORMAL_FRIEND<<'\n';
+    friendListFile.close();
+
+    //deschid si fisierul de prieteni al prietenului tocmai adaugat, si adaug
+    //usernameul celui care a dat request
+
+    friendListFile.open(otherFriendListFile, std::iostream::app);
+    friendListFile <<requesterUsername.c_str()<<' '<<common::NORMAL_FRIEND<<'\n';
+    friendListFile.close();
+
     return true;
 }
 
@@ -256,12 +342,6 @@ void Server::writeToConnectedClientData(std::string username, pthread_t requestT
     }
     pthread_mutex_unlock(&threadListLock);
 }
-
-
-std::string Server::getClientUsername(pthread_t) {
-    return std::string();
-}
-
 
 
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {

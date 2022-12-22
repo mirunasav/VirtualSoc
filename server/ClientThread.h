@@ -27,6 +27,7 @@ public:
     //constructorul fara parametri nu poate fi apelat
     ClientThread( ) = delete;
 
+
     //primeste de la server thread id ul
     explicit ClientThread (pthread_t threadID);
 
@@ -39,13 +40,14 @@ public:
 
     int treatRequest(common::ClientRequests);
 
-    void treatSignUp() const;
+    void treatSignUp() ;
 
-    void treatLogout() const;
+    void treatLogout() ;
 
     void treatLogin();
 
-    bool createUser (  std::string &,  std::string & );
+    void treatAddFriends();
+
 
 
 

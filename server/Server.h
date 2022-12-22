@@ -41,6 +41,7 @@ private:
     //constructor default si privat, nu vrem sa construim de oriunde,
     //ci doar intern si sa-l dam mai departe cu getInstance();
     constexpr static const char * pUsersFile = "../server/users.txt";
+    constexpr static const char * pFriendListFiles= "../server";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -77,6 +78,12 @@ public:
 
     bool createUser( std::string &,  std:: string &);
 
+    bool checkUserExists( std::string &);
+
+    bool addFriend(std::string &, std::string &);
+
+    std::string getUsername (pthread_t ID) const ;
+
     //deconectam de la threadul respectiv clientul
     //returneaza referinta, in caz ca vrem sa folosim intr-o comanda inlantuita
     Server &disconnect (pthread_t);
@@ -92,8 +99,6 @@ public:
     Socket getClientSocket(pthread_t) const;
 
     void writeToConnectedClientData(std::string, pthread_t);
-
-    std::string getClientUsername(pthread_t);
 
     Server &setup (short, int = Server ::DEFAULT_QUEUE_SIZE);
 

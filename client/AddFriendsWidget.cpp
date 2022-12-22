@@ -4,6 +4,8 @@
 
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include "ServerConnection.h"
+#include "MainWindow.h"
 #include "AddFriendsWidget.h"
 
 AddFriendsWidget::AddFriendsWidget(QWidget *pParentWindow) :
@@ -12,12 +14,7 @@ AddFriendsWidget::AddFriendsWidget(QWidget *pParentWindow) :
 }
 
 void AddFriendsWidget::initWidget() {
- /*   QPalette pal = QPalette();
-    pal.setColor(QPalette::Window, Qt::white);
-    this->setAutoFillBackground(true);
-    this->setPalette(pal);
-    this->show();
-*/
+
     this->createComponents();
     this->settleLayouts();
 
@@ -26,71 +23,77 @@ void AddFriendsWidget::initWidget() {
 }
 
 void AddFriendsWidget::createComponents() {
-    this->pCenterLayout = new QVBoxLayout ();
-    this->pMainLayout= new QVBoxLayout ();
-    this->pLineEditLayout = new QHBoxLayout ();
-    this->pLabelLayout = new QVBoxLayout ();
-    this->pTextBoxLayout = new QVBoxLayout ();
-    this->pButtonLayout = new QVBoxLayout ();
 
-    this->pSearchUserLabel = new QLabel (AddFriendsWidget :: pSearchUserText, this);
-    this->pSendRequestTextBox = new QLineEdit(this);
+    this->pMainLayout = new QHBoxLayout(this);
+    this->pButtonLayout = new QHBoxLayout(nullptr);
+    this->pSendRequestLayout = new QVBoxLayout (nullptr);
+    this->pLineEditLayout = new QHBoxLayout(nullptr);
 
-    this->pSendRequestButton = new QPushButton (AddFriendsWidget:: pSendRequestButtonText, this);
-    this->pSendRequestButton->setAutoFillBackground(true);
-    QPalette buttonPalette = this->pSendRequestButton->palette();
-    buttonPalette.setColor(QPalette::Base, QColor(Qt::blue));
-    this->pSendRequestButton ->setPalette(buttonPalette);
-    this->pSendRequestButton->show();
+    this->pUsernameLineEdit = new QLineEdit(this);
+    this->pSearchUsernameLabel = new QLabel (AddFriendsWidget :: pSearchUserText, this);
+
+    this->pSendRequestButton = new QPushButton (AddFriendsWidget :: pSendRequestButtonText, this);
+
+    this->pMainLayout->setAlignment(Qt::AlignCenter);
+    this->pButtonLayout->setAlignment(Qt::AlignRight);
+
+    this->pSendRequestLayout->setAlignment(Qt::AlignCenter);
+    this->pSendRequestLayout->setContentsMargins(MainWindow::WIDTH / 10, 0, MainWindow::WIDTH / 10, 0);
+    this->pUsernameLineEdit->setMaximumWidth(300);
+    this->pLineEditLayout->setAlignment(this->pUsernameLineEdit, Qt::AlignCenter);
+
 
 }
 
 void AddFriendsWidget::settleLayouts() {
-  /*  this->pMainLayout ->addItem(this->pCenterLayout);
-    this->pCenterLayout ->addItem(this->pLineEditLayout);
-    this->pCenterLayout ->addItem(this->pButtonLayout);
-    this->pCenterLayout ->addWidget(this->pSendRequestButton);
 
-    this->pLineEditLayout->addItem (this->pLabelLayout);
-    this->pLineEditLayout->addItem (this->pTextBoxLayout);
+    this->pMainLayout->addItem(this->pSendRequestLayout);
 
-    this -> pTextBoxLayout ->addWidget(this->pSendRequestTextBox);
-    this->pLabelLayout ->addWidget(this->pSearchUserLabel);
+    this->pSendRequestLayout->addItem(this->pLineEditLayout);
+    this->pSendRequestLayout->addItem(this->pButtonLayout);
 
-    this->pCenterLayout->setAlignment(Qt::AlignCenter);
+    this->pLineEditLayout->addWidget(this->pSearchUsernameLabel);
+    this->pLineEditLayout->addWidget(this->pUsernameLineEdit);
 
-    this->pCenterLayout->setContentsMargins(sizeHint().width() /3, 0, sizeHint().height() / 3, 0);
-
-    this->setMinimumWidth( sizeHint().width()/ 3 * 2 + 200 );
-    this->setMinimumHeight( sizeHint().height()/ 2 );
-
-    this->pSendRequestButton->setMaximumWidth( 75 );
-    this->pButtonLayout->setAlignment( Qt::AlignCenter);*/
-  this->pMainLayout ->addWidget(this->pSendRequestButton);
-  this->pMainLayout ->setAlignment(Qt::AlignRight);
+    this->pButtonLayout->addWidget(this->pSendRequestButton);
 
 }
 
-void AddFriendsWidget::onSendRequest(){
-    if(this->userExists()) //pop up box cu a fost trimisa cererea
+void AddFriendsWidget::onSendRequest() {
+    ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
+
+    if (!ServerConnection::getInstance().isConnected()) //nu a mers conexiunea
     {
-        this->notificationPopUp(AddFriendsWidget::pRequestSentText);
+        this->notificationPopUp(LoginWidget::pServerDown);
+        return;
     }
-    else
-        //pop up box cu eroare, username invalid ( exista sau suntem chiar noi )
+    std::string username = this->pUsernameLineEdit->text().toStdString();
+
+    common::writeRequest(ServerConnection::getInstance().getSocket(), common::ClientRequests::REQUEST_ADD_FRIEND);
+    common::writeString(ServerConnection::getInstance().getSocket(),username);
+
+    common::ServerResponse response = common ::readResponse(ServerConnection::getInstance().getSocket());
+
+    switch(response)
     {
-        this->notificationPopUp(AddFriendsWidget :: pInvalidUserText);
+        case common::ServerResponse::ADD_FRIENDS_INVALID_USER:
+            this->notificationPopUp(AddFriendsWidget::pInvalidUserText);
+            break;
+        case common::ServerResponse::ADD_FRIENDS_OWN_USERNAME:
+            this->notificationPopUp(AddFriendsWidget::pOwnUsername);
+            break;
+        case common::ServerResponse:: ADD_FRIENDS_REQUEST_SENT:
+            this->notificationPopUp(AddFriendsWidget::pRequestSentText);
+            break;
+        case common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND:
+            this->notificationPopUp(AddFriendsWidget::pUserAlreadyFriend);
+            break;
     }
-        // emit this->requestSent();
 }
 void AddFriendsWidget::notificationPopUp(const char *message) {
     //apare un text box pop up; parintele este this
     //titlul este ..., mesajul este message, un buton de ok
     QMessageBox::information(this, " ", message,QMessageBox::Ok);
 
-}
-
-bool AddFriendsWidget::userExists() {
-    //verific cu serverul daca exista
 }
 

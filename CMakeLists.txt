@@ -31,10 +31,21 @@ add_executable(client client/MainWindow.cpp
         client/FriendsMenuWidget.cpp
         client/FriendsMenuWidget.h
         client/FriendsListWidget.cpp
-        client/FriendsListWidget.h client/AddFriendsWidget.cpp client/AddFriendsWidget.h)
-add_executable(server server/Server.cpp server/Server.h server/ClientThread.cpp server/ClientThread.h
-                                                                    server/server_main.cpp
-        common/common.cpp common/common.h server/ServerExceptions.cpp server/ServerExceptions.h)
+        client/FriendsListWidget.h
+        client/AddFriendsWidget.cpp
+        client/AddFriendsWidget.h
+        common/errors.cpp
+        common/errors.h)
+add_executable(server server/Server.cpp
+        server/Server.h
+        server/ClientThread.cpp
+        server/ClientThread.h
+        server/server_main.cpp
+        common/common.cpp
+        common/common.h
+        common/errors.cpp
+        common/errors.h)
+
 
 target_link_libraries(client
   Qt::Core

@@ -41,6 +41,9 @@ int ClientThread::treatRequest(common::ClientRequests request) {
         case common::REQUEST_SIGN_UP:
             this->treatSignUp();
             return 200;
+        case common::REQUEST_ADD_FRIEND:
+            this->treatAddFriends();
+            return 200;
 
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
         case common::NO_REQUEST :
@@ -52,6 +55,7 @@ int ClientThread::treatRequest(common::ClientRequests request) {
             this->treatLogout();
             this->loggedIn = false;
             return 401;
+
 
     }
 }
@@ -82,25 +86,53 @@ void ClientThread::treatLogin() {
 }
 
 
-void ClientThread::treatSignUp() const {
+void ClientThread::treatSignUp()  {
     std::string username = common::readString(this->clientSocket);
     std::string password = common::readString (this->clientSocket);
 
     if(Server::getInstance().createUser(username, password)) //daca a reusit crearea
+    {
         writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_SUCCESS);
+        this->loggedIn = true;
+    }
     else
         writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_USERNAME_EXISTS);
 
 }
 
-void ClientThread::treatLogout() const {
+void ClientThread::treatLogout()  {
     Server::getInstance().logout(this->ID);
+    this->loggedIn = false;
+}
+
+void ClientThread::treatAddFriends() {
+    std::string username = common::readString(this->clientSocket);
+
+    //daca usernameul introdus e chiar al celui care trimite cererea
+    for(const auto & connectedClientData : Server::getInstance().getClientThreadDataInstant())
+    {
+        if(!connectedClientData.username.empty() && connectedClientData.username==username && connectedClientData.threadID == this->ID){
+            writeResponse(this->clientSocket,common:: ServerResponse :: ADD_FRIENDS_OWN_USERNAME);
+            return;
+        }
+    }
+
+    if(Server::getInstance().checkUserExists(username)) {
+        auto requesterUsername =Server::getInstance().getUsername(this->ID);
+
+       if( Server::getInstance().addFriend(requesterUsername, username))
+           writeResponse(this->clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_SENT);
+       else
+           writeResponse(this->clientSocket, common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND);
+
+    }
+    else
+        writeResponse(this->clientSocket, common::ServerResponse::ADD_FRIENDS_INVALID_USER);
+
 }
 
 
-bool ClientThread::createUser(std::string &, std::string &) {
-    return false;
-}
+
 
 
 
