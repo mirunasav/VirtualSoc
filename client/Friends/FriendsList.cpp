@@ -4,8 +4,8 @@
 
 #include <QVBoxLayout>
 #include "FriendsList.h"
-#include "ServerConnection.h"
-#include "../common/common.h"
+#include "../ServerConnection.h"
+#include "../../common/common.h"
 #include "FriendItem.h"
 #include <QTimer>
 
@@ -144,10 +144,7 @@ void FriendsList::changeFriendshipType(const std::string & username, const std::
     common::writeString(ServerConnection::getInstance().getSocket(), username);
     common::writeString(ServerConnection::getInstance().getSocket(), newFriendshipType);
 
-    this->clearFriendList();
-    this->acquireFriendList();
    // this->restartTimer();
-
 }
 //
 //void FriendsList::restartTimer() {

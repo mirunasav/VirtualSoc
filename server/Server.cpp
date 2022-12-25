@@ -168,12 +168,12 @@ bool Server::checkLogin(std::string & username , std::string & password, pthread
     std::ifstream usersFile;
     usersFile.open(Server::pUsersFile);
 
-    std::string usernameFromFile, passwordFromFile;
+    std::string usernameFromFile, passwordFromFile,isPrivate;
 
-    while (usersFile >>usernameFromFile >>passwordFromFile)
+    while (usersFile >>usernameFromFile >>passwordFromFile>>isPrivate)
     {
         if(username == usernameFromFile && password == passwordFromFile) { //scriu in connectedClientData
-            this->writeToConnectedClientData(username, requestThreadID);
+            this->writeToConnectedClientData(username,static_cast<common::privacySetting>(std::stoi(isPrivate)), requestThreadID);
             pthread_mutex_unlock(&usersFileLock);
             usersFile.close();
             return true;
@@ -191,8 +191,8 @@ bool Server::checkUserExists(std::string & username) {
     std::ifstream usersFile;
     usersFile.open(Server::pUsersFile);
 
-    std::string usernameFromFile, passwordFromFile;
-     while (usersFile >>usernameFromFile >>passwordFromFile)
+    std::string usernameFromFile, passwordFromFile, isPrivate;
+     while (usersFile >>usernameFromFile >>passwordFromFile>>isPrivate)
     {
         if(username == usernameFromFile )
         {
@@ -225,15 +225,17 @@ std::string Server::getUsername(pthread_t ID) const{
     return username;
 }
 
+
+
 bool Server::createUser( std::string &username,  std::string &password, pthread_t requestThreadID) {
     pthread_mutex_lock(&usersFileLock);
 
     std::fstream usersFile;
     usersFile.open(Server::pUsersFile);
 
-    std::string usernameFromFile, passwordFromFile;
+    std::string usernameFromFile, passwordFromFile,isPrivate;
 
-    while (usersFile >>usernameFromFile >>passwordFromFile)
+    while (usersFile >>usernameFromFile >>passwordFromFile>>isPrivate)
     {
         if(usernameFromFile == username) //daca exista deja un username la fel
         {
@@ -247,10 +249,10 @@ bool Server::createUser( std::string &username,  std::string &password, pthread_
 
     usersFile.open(Server::pUsersFile ,  std::iostream::app);
 
-    usersFile << username.c_str() <<' ' << password.c_str() << '\n';
+    usersFile << username.c_str() <<' ' << password.c_str() <<' '<<common::privacySetting::PUBLIC <<'\n';
     pthread_mutex_unlock( & usersFileLock );
     usersFile.close();
-    this->writeToConnectedClientData(username, requestThreadID);
+    this->writeToConnectedClientData(username, common::privacySetting::PUBLIC,requestThreadID);
     return true;
 }
 std::string Server::createFriendListFileName(std::string &username) {
@@ -423,16 +425,40 @@ Server &Server::logout(pthread_t threadID) {
     return *this;
 }
 
-void Server::writeToConnectedClientData(std::string username, pthread_t requestThreadID)
+void Server::writeToConnectedClientData(std::string username, common::privacySetting privacy,pthread_t requestThreadID)
 {
     pthread_mutex_lock(&threadListLock); //blocam lista de threaduri
 
     for (auto & clientData : this->clientList)
     {
-        if(clientData.threadID == requestThreadID)
+        if(clientData.threadID == requestThreadID) {
             clientData.username = username;
+            clientData.privacy = privacy;
+        }
     }
     pthread_mutex_unlock(&threadListLock);
+}
+
+bool Server::isPrivate(pthread_t ID) const {
+    pthread_mutex_lock ( & threadListLock );
+
+
+    for ( const auto & clientData : this->clientList)
+        if ( clientData.threadID == ID ) { // cautam username-ul thread-ului cu ID-ul dat
+           auto privacy = clientData.privacy;
+           int privacyInt = static_cast<int> (privacy);
+           switch(privacyInt)
+           {
+               case 0:
+                   return true; //e private
+               case 1:
+                   return false;
+           }
+            break;
+        }
+
+    pthread_mutex_unlock( & threadListLock );
+
 }
 
 
@@ -440,3 +466,5 @@ void Server::writeToConnectedClientData(std::string username, pthread_t requestT
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {
     return this->threadID == other.threadID;
 }
+
+

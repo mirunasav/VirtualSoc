@@ -23,6 +23,8 @@ void ActionsWidget::initWidget()
 
     connect(this->pFriendsButton, &QPushButton ::clicked, this, &ActionsWidget::onFriendsButton);
     connect(this, SIGNAL(goToFriendsMenu()), this->parent(), SLOT(swapWidgetsFriendsMenu()));
+
+    connect(this->pSettingsButton, &QPushButton ::clicked, this, &ActionsWidget::onSettings);
 }
 
 void ActionsWidget::createComponents() {

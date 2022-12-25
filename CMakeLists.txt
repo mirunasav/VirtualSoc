@@ -28,12 +28,14 @@ add_executable(client client/MainWindow.cpp
        common/common.cpp common/common.h
         client/ServerConnection.cpp
         client/ServerConnection.h
-        client/FriendsMenuWidget.cpp
-        client/FriendsMenuWidget.h
+        client/Friends/FriendsMenuWidget.cpp
+        client/Friends/FriendsMenuWidget.h
         client/AddFriendsWidget.cpp
         client/AddFriendsWidget.h
+        client/SettingsWidget.cpp
+        client/SettingsWidget.h
         common/errors.cpp
-        common/errors.h client/FriendsList.cpp client/FriendsList.h client/FriendItem.cpp client/FriendItem.h)
+        common/errors.h client/Friends/FriendsList.cpp client/Friends/FriendsList.h client/Friends/FriendItem.cpp client/Friends/FriendItem.h client/SettingsWidget.cpp client/SettingsWidget.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

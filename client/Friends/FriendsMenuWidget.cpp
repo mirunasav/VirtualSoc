@@ -4,7 +4,7 @@
 
 #include <QVBoxLayout>
 #include "FriendsMenuWidget.h"
-#include "AddFriendsWidget.h"
+#include "../AddFriendsWidget.h"
 #include "FriendsList.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
@@ -85,6 +85,8 @@ void FriendsMenuWidget::swapWidgetsAddFriends() {
     this->pChangeableWidget = new AddFriendsWidget(this);
 
     this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
+
+    this->pFriendsLabel->setText(FriendsMenuWidget::pFriendsAddFriendsLabelText);
 
     pOldWidget->hide();
     delete pOldWidget;

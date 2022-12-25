@@ -92,6 +92,7 @@ void ClientThread::treatLogin() {
     if(Server::getInstance().checkLogin(username, password, this->ID))
     {
         this->loggedIn = true;
+        this->isPrivate = Server::getInstance().isPrivate(this->ID);
         writeResponse(this->clientSocket, common::ServerResponse::LOGIN_SUCCESS);
     }
     else
@@ -107,6 +108,7 @@ void ClientThread::treatSignUp()  {
     {
         writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_SUCCESS);
         this->loggedIn = true;
+        this->isPrivate = Server::getInstance().isPrivate(this->ID);
     }
     else
         writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_USERNAME_EXISTS);
@@ -179,12 +181,19 @@ void ClientThread::treatChangeFriendshipType() {
     Server::getInstance().changeFriendshipType(requesterUsername, friendUsername,newFriendshipType);
 }
 
-std::string ClientThread::getClientUsername()
+std::string ClientThread::getClientUsername() const
 {
 
     return Server::getInstance().getUsername(this->ID);
 }
 
+
+void ClientThread::treatGetPrivacyType() {
+    if(this->isPrivate) //daca e privat
+        writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PRIVATE);
+    else
+        writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PRIVATE);
+}
 
 /*bool ClientThread::createUser(const std::string &, const std::string &) {
     return false;

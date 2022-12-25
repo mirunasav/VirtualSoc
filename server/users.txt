@@ -1,7 +1,9 @@
-user1 parola1
-user2 parola2
-user3 parola3
-user4 parola4
-u p
-user5 parola5
-vlad vlad
+user1 parola1 0
+user2 parola2 0
+user3 parola3 0
+user4 parola4 0
+u p 0
+user5 parola5 0
+vlad vlad 0
+user10 parola1 1
+miruna parola 0

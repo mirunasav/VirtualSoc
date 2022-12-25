@@ -19,6 +19,7 @@ private:
     QLayout *pButtonsLayout{nullptr};
 
     QPushButton *pRemoveFriendButton {nullptr};
+    QPushButton *pApplyChangeButton {nullptr};
 
     QComboBox *pChangeFriendType {nullptr};
 
@@ -29,14 +30,15 @@ private slots:
     //genereaza mai departe semnale
     void onRemoveClick ();
     void onChangeTypeClick(int);
+    void onApplyChangeClick();
 
 signals:
     void remove(const std::string &);
     void changeType(const std::string &, const std::string &);
-
+    void applyChange();
 public:
     constexpr static const char *pRemoveFriendButtonText = "Remove";
-    constexpr static const char *pChangeTypeText= "Change Friendship Type";
+    constexpr static const char *pApplyChangeButtonText= "Apply Change";
 
     explicit FriendItem(QWidget *,const std::string & ,const std::string & ); //username, friendship type
 

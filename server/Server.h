@@ -28,6 +28,9 @@ public:
         //id-ul userului
         std::string username;
 
+        //tip de privacy:
+        common::privacySetting privacy;
+
         //adresa userului
         sockaddr_in clientAddress;
 
@@ -35,6 +38,7 @@ public:
         bool operator == ( const Server::ConnectedClientData & ) const ;
 
     };
+
 
     static constexpr Socket INVALID_SOCKET =  (Socket) SOCKET_ERROR;
 
@@ -95,6 +99,7 @@ public:
 
     std::string getUsername (pthread_t ID) const ;
 
+    bool isPrivate(pthread_t ID) const;
     std::string createFriendListFileName (std::string &);
 
     std::fstream & getFriendListFile( std::string &);
@@ -117,7 +122,7 @@ public:
 
     Socket getClientSocket(pthread_t) const;
 
-    void writeToConnectedClientData(std::string, pthread_t);
+    void writeToConnectedClientData(std::string,common::privacySetting, pthread_t);
 
     Server &setup (short, int = Server ::DEFAULT_QUEUE_SIZE);
 

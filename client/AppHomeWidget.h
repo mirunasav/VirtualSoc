@@ -13,18 +13,16 @@ Q_OBJECT
 private slots:
     void swapWidgetsLogOut();
     void swapWidgetsFriendsMenu();
+    void swapWidgetsSettings();
 
 private:
     QWidget * pCentralWidget {nullptr};
 
     QLayout *pLayout {nullptr};
     QLayout *pMainLayout {nullptr};
-    QLayout *pFriendsMenuLayout {nullptr};
 
     QWidget * pFeedWidget { nullptr };
     QWidget * pActionsWidget { nullptr };
-
-    QLabel *pFriendsMenuLabel {nullptr};
 
     QSplitter *pSplitter {nullptr};
 public:

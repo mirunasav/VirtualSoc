@@ -23,6 +23,8 @@ private:
     int ServerResponseInt;
 
     bool loggedIn {false};
+
+    bool isPrivate {false};
 public:
     //constructorul fara parametri nu poate fi apelat
     ClientThread( ) = delete;
@@ -40,7 +42,7 @@ public:
 
     int treatRequest(common::ClientRequests);
 
-    std::string getClientUsername();
+    std::string getClientUsername() const;
 
     void treatSignUp() ;
 
@@ -57,6 +59,8 @@ public:
     void treatRemoveFriend();
 
     void treatChangeFriendshipType();
+
+    void treatGetPrivacyType();
 
 
 

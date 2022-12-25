@@ -41,6 +41,10 @@ namespace common {
 
         REQUEST_CHANGE_TYPE = 365,
 
+        REQUEST_GET_PRIVACY_TYPE = 370,
+
+        REQUEST_CHANGE_PRIVACY_TYPE = 375,
+
         REQUEST_LOGOUT = 390,
 
         NO_REQUEST = 400
@@ -66,6 +70,10 @@ namespace common {
 
         ADD_FRIENDS_OWN_USERNAME = 408,
 
+        PRIVACY_TYPE_PUBLIC = 410,
+
+        PRIVACY_TYPE_PRIVATE = 411,
+
         //cand apesi pe login desi nu esti logat
         ACCES_DENIED_NOT_LOGGED_IN = 404
     };
@@ -81,6 +89,11 @@ namespace common {
         NORMAL_FRIEND = 1,
         CLOSE_FRIEND = 2,
         Acquaintance = 3
+    };
+    enum privacySetting : int
+    {
+        PUBLIC = 0,
+        PRIVATE = 1
     };
     constexpr static const char * LOCALHOST = "127.0.0.1";
     constexpr static ushort SERVER_PORT = 56000;

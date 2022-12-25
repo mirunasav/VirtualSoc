@@ -7,7 +7,8 @@
 #include <QStyleOption>
 #include "FeedWidget.h"
 #include "ActionsWidget.h"
-#include "FriendsMenuWidget.h"
+#include "Friends/FriendsMenuWidget.h"
+#include "SettingsWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -52,7 +53,7 @@ void AppHomeWidget ::settleLayouts() {
 
 void AppHomeWidget :: styleComponents()
 {
-    this->pSplitter->setSizes(QList <int>{sizeHint().width()*1/3, sizeHint().width()*2/3*5});
+    this->pSplitter->setSizes(QList <int>{sizeHint().width()*1/3, sizeHint().width()*2/3*7});
 }
 
 void AppHomeWidget::swapWidgetsLogOut() {
@@ -80,6 +81,17 @@ void AppHomeWidget::swapWidgetsFriendsMenu() {
     pOldWidget->hide();
     delete pOldWidget;
 
+}
+
+void AppHomeWidget::swapWidgetsSettings() {
+    QWidget *pOldWidget = this->pFeedWidget;
+
+    this->pFeedWidget = new SettingsWidget(this);
+
+    this->pSplitter->replaceWidget(1, this->pFeedWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
 }
 
 

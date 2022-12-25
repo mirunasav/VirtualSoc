@@ -5,7 +5,7 @@
 #include <QHBoxLayout>
 #include "FriendItem.h"
 #include <string>
-#include "../common/common.h"
+#include "../../common/common.h"
 
 
 FriendItem::FriendItem(QWidget *pParent,const std::string & username ,const std::string & friendshipType):
@@ -21,6 +21,9 @@ void FriendItem::initWidget(const std::string &username ,const std::string  & fr
     connect(this->pRemoveFriendButton, &QPushButton ::clicked, this, &FriendItem ::onRemoveClick);
     connect (this, SIGNAL(remove(const std::string &)), this->parent(), SLOT(removeFriend(const std::string &  )));
     connect (this, SIGNAL(changeType(const std::string &, const std::string &)), this->parent(), SLOT(changeFriendshipType(const std::string &, const std::string &) ));
+
+    connect(this->pApplyChangeButton, &QPushButton::clicked, this, &FriendItem::onApplyChangeClick);
+    connect(this, SIGNAL(applyChange()), this->parent(), SLOT(refreshFriendList()));
 }
 
 void FriendItem::createComponents(const std::string &username ,const std::string &friendshipType) {
@@ -29,6 +32,7 @@ void FriendItem::createComponents(const std::string &username ,const std::string
     this->pButtonsLayout= new QHBoxLayout(nullptr);
 
     this->pRemoveFriendButton = new QPushButton (FriendItem::pRemoveFriendButtonText, this);
+    this->pApplyChangeButton = new QPushButton(FriendItem::pApplyChangeButtonText, this);
 
     this->pChangeFriendType = new QComboBox(this);
     this->pChangeFriendType->addItem(QStringLiteral("Normal Friend"));
@@ -76,6 +80,7 @@ void FriendItem::settleLayouts() {
     this->pLabelsLayout->addWidget(this->pFriendUsername);
     this->pLabelsLayout->addWidget(this->pFriendshipType);
     this->pButtonsLayout->addWidget(this->pChangeFriendType);
+    this->pButtonsLayout->addWidget(this->pApplyChangeButton);
     this->pButtonsLayout->addWidget(this->pRemoveFriendButton);
 
     this->pMainLayout->setAlignment(Qt::AlignLeft);
@@ -105,6 +110,7 @@ void FriendItem::onChangeTypeClick(int index) {
     switch(index)
     {
         case 0://Normal friend
+            this->pChangeFriendType->currentText() = "Normal Friend";
             emit changeType(this->pFriendUsername->text().toStdString(),std::to_string(common::typesOfFriend::NORMAL_FRIEND));
             break;
         case 1://Close Friend
@@ -115,6 +121,10 @@ void FriendItem::onChangeTypeClick(int index) {
             break;
 
     }
+}
+
+void FriendItem::onApplyChangeClick() {
+    emit applyChange();
 }
 
 
