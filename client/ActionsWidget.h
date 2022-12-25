@@ -31,7 +31,7 @@ private:
 //    QAction *pFriendsList {nullptr};
 
 
-    QPushButton *pSendMesssageButton {nullptr};
+    QPushButton *pMessagesButton {nullptr};
     QPushButton *pSettingsButton {nullptr};
     QPushButton *pLogoutButton {nullptr};
 
@@ -46,7 +46,7 @@ public:
     constexpr static const char *pMyProfileButtonText = "My Profile";
     constexpr static const char *pPostButtonText = "New Post";
     constexpr static const char *pFriendsButtonText = "Friends";
-    constexpr static const char *pSendMesssageButtonText = "Send a Message";
+    constexpr static const char *pMessagesButtonText = "Messages";
     constexpr static const char *pSettingsButtonText = "Settings";
     constexpr static const char *pLogoutButtonText = "Logout";
 

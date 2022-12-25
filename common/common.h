@@ -25,7 +25,7 @@ namespace common {
         //refresh la lista de useri
         REQUEST_REFRESH_USERS = 310,
 
-        REQUEST_GET_CHAR = 315,
+        REQUEST_GET_CHAT = 315,
 
         REQUEST_WRITE_MESSAGE = 320,
 
@@ -33,7 +33,15 @@ namespace common {
 
         REQUEST_ADD_FRIEND = 335,
 
-        REQUEST_LOGOUT = 340,
+        REQUEST_GET_FRIEND_LIST = 340,
+
+        REQUEST_GET_NUMBER_OF_FRIENDS = 350,
+
+        REQUEST_REMOVE_FRIEND = 360,
+
+        REQUEST_CHANGE_TYPE = 365,
+
+        REQUEST_LOGOUT = 390,
 
         NO_REQUEST = 400
 
@@ -57,11 +65,23 @@ namespace common {
         ADD_FRIENDS_ALREADY_FRIEND = 407,
 
         ADD_FRIENDS_OWN_USERNAME = 408,
+
         //cand apesi pe login desi nu esti logat
         ACCES_DENIED_NOT_LOGGED_IN = 404
     };
 
+    enum typesOfFile : int
+    {
+        friendFile = 1,
+        chatFile = 2
+    };
 
+    enum typesOfFriend : int
+    {
+        NORMAL_FRIEND = 1,
+        CLOSE_FRIEND = 2,
+        Acquaintance = 3
+    };
     constexpr static const char * LOCALHOST = "127.0.0.1";
     constexpr static ushort SERVER_PORT = 56000;
     constexpr static const char * SERVER_IP = LOCALHOST;
@@ -70,9 +90,6 @@ namespace common {
     constexpr static int DISCONNECT = -2;
     constexpr static int WRITE_ERROR = -3;
 
-    constexpr static int NORMAL_FRIEND = 1;
-    constexpr static int CLOSE_FRIEND = 2;
-    constexpr static int Acquaintance = 3;
 
     ClientRequests readRequest(Socket socket);
     ServerResponse readResponse (Socket socket);

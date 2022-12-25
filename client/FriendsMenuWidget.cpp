@@ -4,8 +4,8 @@
 
 #include <QVBoxLayout>
 #include "FriendsMenuWidget.h"
-#include "FriendsListWidget.h"
 #include "AddFriendsWidget.h"
+#include "FriendsList.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
         QWidget(pParentWindow ){
@@ -17,10 +17,14 @@ void FriendsMenuWidget::initWidget() {
     this->settleLayouts();
     this->styleComponents();
 
+
     connect(this->pAddFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsAddFriends);
+    connect(this->pMyFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsFriendList);
+
 }
 
 void FriendsMenuWidget::createComponents() {
+
     this->pHorizontalSplitter= new QSplitter (Qt::Horizontal);
     this->pVerticalSplitter = new QSplitter (Qt::Vertical);
 
@@ -29,7 +33,7 @@ void FriendsMenuWidget::createComponents() {
 
     this->pFriendsLabel->setFont(this->FriendsLabelFont);
 
-    this->pChangeableWidget = new FriendsListWidget(this);
+    this->pChangeableWidget = new FriendsList(this);
     this->pButtonsWidget = new QWidget(this);
 
     this->pMainLayout = new QVBoxLayout();
@@ -58,9 +62,10 @@ void FriendsMenuWidget::settleLayouts() {
    // this->pChangeableLayout->addWidget(this->pButtonsWidget);
     //this->pChangeableLayout ->addWidget(this->pChangeableWidget);
 
+    this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
     this->pButtonsLayout ->addWidget(this->pAddFriendsButton);
     this->pButtonsLayout ->addWidget(this->pFriendRequestsButton);
-    this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
+
 
 
 
@@ -90,6 +95,14 @@ void FriendsMenuWidget::swapWidgetsFriendRequests() {
 }
 
 void FriendsMenuWidget::swapWidgetsFriendList() {
+    QWidget *pOldWidget = this->pChangeableWidget;
+
+    this->pChangeableWidget = new FriendsList(this);
+
+    this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
 
 }
 

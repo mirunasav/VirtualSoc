@@ -2,6 +2,7 @@
 // Created by mrnk on 12/4/22.
 //
 
+#include <fstream>
 #include "ClientThread.h"
 #include "Server.h"
 #include "../common/common.h"
@@ -44,8 +45,20 @@ int ClientThread::treatRequest(common::ClientRequests request) {
         case common::REQUEST_ADD_FRIEND:
             this->treatAddFriends();
             return 200;
-
+        case common::REQUEST_GET_NUMBER_OF_FRIENDS:
+            this->treatGetNumberOfFriends();
+            return 200;
+        case common::REQUEST_GET_FRIEND_LIST:
+            this->treatGetFriendList();
+            return 200;
+        case common::REQUEST_REMOVE_FRIEND:
+            this->treatRemoveFriend();
+            return 200;
+        case common::REQUEST_CHANGE_TYPE:
+            this->treatChangeFriendshipType();
+            return 200;
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
+
         case common::NO_REQUEST :
             Server::getInstance().disconnect(this->ID);
             return 499;
@@ -90,7 +103,7 @@ void ClientThread::treatSignUp()  {
     std::string username = common::readString(this->clientSocket);
     std::string password = common::readString (this->clientSocket);
 
-    if(Server::getInstance().createUser(username, password)) //daca a reusit crearea
+    if(Server::getInstance().createUser(username, password,this->ID)) //daca a reusit crearea
     {
         writeResponse(this->clientSocket, common::ServerResponse::CREATE_ACCOUNT_SUCCESS);
         this->loggedIn = true;
@@ -118,7 +131,7 @@ void ClientThread::treatAddFriends() {
     }
 
     if(Server::getInstance().checkUserExists(username)) {
-        auto requesterUsername =Server::getInstance().getUsername(this->ID);
+        auto requesterUsername =this->getClientUsername();
 
        if( Server::getInstance().addFriend(requesterUsername, username))
            writeResponse(this->clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_SENT);
@@ -131,10 +144,46 @@ void ClientThread::treatAddFriends() {
 
 }
 
+void ClientThread::treatGetFriendList() {
+    auto requesterUsername =this->getClientUsername();//gasim usernameul celui care cere
 
+    int numberOfFriends = Server::getInstance().getNumberOfFriends(requesterUsername);
 
+    std::fstream & friendsFile = Server::getInstance().getFriendListFile(requesterUsername);
+   std::string username, friendshipType;
+   for(int i = 1; i<= numberOfFriends; i++){
+       friendsFile>>username>>friendshipType;
+       common::writeString(this->clientSocket, username);
+       common::writeString(this->clientSocket, friendshipType);
+   }
+    Server::getInstance().releaseFile(typesOfFile::friendFile);
+}
 
+void ClientThread::treatGetNumberOfFriends() {
+    auto requesterUsername = this->getClientUsername(); //gasim usernameul celui care cere
+    int numberOfFriends = Server::getInstance().getNumberOfFriends(requesterUsername);
+    write(this->clientSocket, &numberOfFriends, sizeof(int));
+}
 
+void ClientThread::treatRemoveFriend() {
+    auto requesterUsername =this->getClientUsername();//gasesc ID-ul celui care cere
+    auto usernameToRemove = common::readString(this->clientSocket);
+
+    Server::getInstance().removeFriendFromBothLists(requesterUsername, usernameToRemove);
+}
+void ClientThread::treatChangeFriendshipType() {
+    auto requesterUsername =this->getClientUsername();//gasesc ID-ul celui care cere
+    auto friendUsername = common::readString(this->clientSocket);
+    auto newFriendshipType = common::readString(this->clientSocket);
+
+    Server::getInstance().changeFriendshipType(requesterUsername, friendUsername,newFriendshipType);
+}
+
+std::string ClientThread::getClientUsername()
+{
+
+    return Server::getInstance().getUsername(this->ID);
+}
 
 
 /*bool ClientThread::createUser(const std::string &, const std::string &) {

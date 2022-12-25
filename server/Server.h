@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <list>
+#include <fstream>
 #include "../common/common.h"
 class Server {
 public:
@@ -41,7 +42,7 @@ private:
     //constructor default si privat, nu vrem sa construim de oriunde,
     //ci doar intern si sa-l dam mai departe cu getInstance();
     constexpr static const char * pUsersFile = "../server/users.txt";
-    constexpr static const char * pFriendListFiles= "../server";
+    constexpr static const char * pFriendListFiles= "../server/friend_files";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -51,6 +52,10 @@ private:
     std::list <ConnectedClientData> clientList;
 
     Socket serverSocket {(Socket) SOCKET_ERROR}; //invalid socket
+
+    std::fstream currentOpenFriendFile;
+    std::fstream currentOpenChatFile;
+
 public:
     //cream un nou socket
     static auto newSocket();
@@ -76,13 +81,27 @@ public:
 
     bool checkLogin(std::string &, std:: string &, pthread_t);
 
-    bool createUser( std::string &,  std:: string &);
+    bool createUser( std::string &,  std:: string &, pthread_t);
 
     bool checkUserExists( std::string &);
 
     bool addFriend(std::string &, std::string &);
 
+    void removeFriendFromOneList(std::string &, std::string &);
+
+    void removeFriendFromBothLists(std::string &, std::string &);
+
+    void changeFriendshipType(std::string &,std::string &, std::string &);
+
     std::string getUsername (pthread_t ID) const ;
+
+    std::string createFriendListFileName (std::string &);
+
+    std::fstream & getFriendListFile( std::string &);
+
+    void releaseFile(int type); //1->friendFile, 2->ChatFile
+
+    int getNumberOfFriends(std::string &);
 
     //deconectam de la threadul respectiv clientul
     //returneaza referinta, in caz ca vrem sa folosim intr-o comanda inlantuita

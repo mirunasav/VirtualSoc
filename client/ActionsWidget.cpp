@@ -32,7 +32,7 @@ void ActionsWidget::createComponents() {
     this->pMyProfileButton = new QPushButton(ActionsWidget::pMyProfileButtonText, this);
     this->pPostButton = new QPushButton(ActionsWidget::pPostButtonText, this);
     this->pFriendsButton = new QPushButton(ActionsWidget::pFriendsButtonText, this);
-    this->pSendMesssageButton = new QPushButton(ActionsWidget::pSendMesssageButtonText, this);
+    this->pMessagesButton = new QPushButton(ActionsWidget::pMessagesButtonText, this);
     this->pSettingsButton = new QPushButton(ActionsWidget::pSettingsButtonText, this);
     this->pLogoutButton = new QPushButton(ActionsWidget:: pLogoutButtonText, this);
 }
@@ -41,7 +41,7 @@ void ActionsWidget::settleLayouts() {
     this->pActionsLayout->addWidget(this->pMyProfileButton);
     this->pActionsLayout->addWidget(this->pPostButton);
     this->pActionsLayout->addWidget(this->pFriendsButton);
-    this->pActionsLayout->addWidget(this->pSendMesssageButton);
+    this->pActionsLayout->addWidget(this->pMessagesButton);
     this->pActionsLayout->addWidget(this->pSettingsButton);
     this->pActionsLayout->addWidget(this->pLogoutButton);
 

@@ -30,12 +30,10 @@ add_executable(client client/MainWindow.cpp
         client/ServerConnection.h
         client/FriendsMenuWidget.cpp
         client/FriendsMenuWidget.h
-        client/FriendsListWidget.cpp
-        client/FriendsListWidget.h
         client/AddFriendsWidget.cpp
         client/AddFriendsWidget.h
         common/errors.cpp
-        common/errors.h)
+        common/errors.h client/FriendsList.cpp client/FriendsList.h client/FriendItem.cpp client/FriendItem.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

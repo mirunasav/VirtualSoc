@@ -40,6 +40,8 @@ public:
 
     int treatRequest(common::ClientRequests);
 
+    std::string getClientUsername();
+
     void treatSignUp() ;
 
     void treatLogout() ;
@@ -47,6 +49,14 @@ public:
     void treatLogin();
 
     void treatAddFriends();
+
+    void treatGetFriendList();
+
+    void treatGetNumberOfFriends();
+
+    void treatRemoveFriend();
+
+    void treatChangeFriendshipType();
 
 
 

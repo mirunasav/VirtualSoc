@@ -1,9 +1,6 @@
-
-
 #include "LoginWidget.h"
 #include "MainWindow.h"
 #include "ServerConnection.h"
-
 #include <QKeyEvent>
 #include <QMessageBox>
 
@@ -70,14 +67,9 @@ void LoginWidget ::createComponents() {
 
     this->pLoginButtonsLayout = new QHBoxLayout(nullptr);
     this->pLoginButtonsLayout ->setAlignment(Qt::AlignRight);
-
-
-
 }
 
-
-
-void LoginWidget ::settleLayouts() {
+void LoginWidget :: settleLayouts () {
     //addWidget : obiect desenabil
     //addItem: layout pt ca nu e desenabil, chestii de aranjare, spacere
     this->pLoginLayout->addWidget(this->pWidgetTitle);
@@ -131,8 +123,8 @@ void LoginWidget::onConfirmLogin() {
         this->notificationPopUp(LoginWidget::pServerDown);
         return;
     }
-    std::string username = this->pUsernameTextBox->text().toStdString().c_str();
-    std::string password = this->pPasswordTextBox->text().toStdString().c_str();
+    std::string username = this->pUsernameTextBox->text().toStdString();
+    std::string password = this->pPasswordTextBox->text().toStdString();
 
     writeRequest(ServerConnection::getInstance().getSocket(), ClientRequests ::REQUEST_LOGIN);//scriu ce tip de request este
     writeString(ServerConnection::getInstance().getSocket(), this->pUsernameTextBox->text().toStdString());//scriu username
