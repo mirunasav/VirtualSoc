@@ -61,7 +61,7 @@ void FriendsList::settleLayouts() {
 }
 void FriendsList::acquireFriendList() {
     try {
-        writeRequest(ServerConnection::getInstance().getSocket(), ClientRequests::REQUEST_GET_FRIEND_LIST);
+       writeRequest(ServerConnection::getInstance().getSocket(), ClientRequests::REQUEST_GET_FRIEND_LIST);
 
        // int numberOfFriends = readBufferInt(ServerConnection::getInstance().getSocket(),numberOfFriends );
 
@@ -143,6 +143,7 @@ void FriendsList::changeFriendshipType(const std::string & username, const std::
     common::writeRequest(ServerConnection::getInstance().getSocket(),ClientRequests::REQUEST_CHANGE_TYPE);
     common::writeString(ServerConnection::getInstance().getSocket(), username);
     common::writeString(ServerConnection::getInstance().getSocket(), newFriendshipType);
+
 
    // this->restartTimer();
 }

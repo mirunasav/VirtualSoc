@@ -59,9 +59,6 @@ void FriendsMenuWidget::settleLayouts() {
     this->pVerticalSplitter ->addWidget(this->pHorizontalSplitter);
 
 
-   // this->pChangeableLayout->addWidget(this->pButtonsWidget);
-    //this->pChangeableLayout ->addWidget(this->pChangeableWidget);
-
     this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
     this->pButtonsLayout ->addWidget(this->pAddFriendsButton);
     this->pButtonsLayout ->addWidget(this->pFriendRequestsButton);

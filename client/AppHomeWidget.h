@@ -14,6 +14,7 @@ private slots:
     void swapWidgetsLogOut();
     void swapWidgetsFriendsMenu();
     void swapWidgetsSettings();
+    void swapWidgetsMessages();
 
 private:
     QWidget * pCentralWidget {nullptr};

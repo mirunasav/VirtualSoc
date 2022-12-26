@@ -92,8 +92,8 @@ namespace common {
     };
     enum privacySetting : int
     {
-        PUBLIC = 0,
-        PRIVATE = 1
+        PUBLIC = 0, //!isPrivate
+        PRIVATE = 1 //isPrivate
     };
     constexpr static const char * LOCALHOST = "127.0.0.1";
     constexpr static ushort SERVER_PORT = 56000;

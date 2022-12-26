@@ -40,6 +40,8 @@ private:
 signals:
     void loggedOut();
     void goToFriendsMenu();
+    void goToSettings();
+    void goToMessages();
 
 public:
     //constantele

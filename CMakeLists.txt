@@ -35,7 +35,7 @@ add_executable(client client/MainWindow.cpp
         client/SettingsWidget.cpp
         client/SettingsWidget.h
         common/errors.cpp
-        common/errors.h client/Friends/FriendsList.cpp client/Friends/FriendsList.h client/Friends/FriendItem.cpp client/Friends/FriendItem.h client/SettingsWidget.cpp client/SettingsWidget.h)
+        common/errors.h client/Friends/FriendsList.cpp client/Friends/FriendsList.h client/Friends/FriendItem.cpp client/Friends/FriendItem.h client/SettingsWidget.cpp client/SettingsWidget.h client/MessagesWidget.cpp client/MessagesWidget.h client/NewMessageWidget.cpp client/NewMessageWidget.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

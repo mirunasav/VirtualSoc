@@ -57,6 +57,9 @@ int ClientThread::treatRequest(common::ClientRequests request) {
         case common::REQUEST_CHANGE_TYPE:
             this->treatChangeFriendshipType();
             return 200;
+        case common::REQUEST_GET_PRIVACY_TYPE:
+            this->treatGetPrivacyType();
+            return 200;
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
 
         case common::NO_REQUEST :
@@ -192,7 +195,7 @@ void ClientThread::treatGetPrivacyType() {
     if(this->isPrivate) //daca e privat
         writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PRIVATE);
     else
-        writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PRIVATE);
+        writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PUBLIC);
 }
 
 /*bool ClientThread::createUser(const std::string &, const std::string &) {

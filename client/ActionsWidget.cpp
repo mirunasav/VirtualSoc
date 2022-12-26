@@ -25,6 +25,11 @@ void ActionsWidget::initWidget()
     connect(this, SIGNAL(goToFriendsMenu()), this->parent(), SLOT(swapWidgetsFriendsMenu()));
 
     connect(this->pSettingsButton, &QPushButton ::clicked, this, &ActionsWidget::onSettings);
+    connect(this, SIGNAL(goToSettings()), this->parent(), SLOT(swapWidgetsSettings()));
+
+
+    connect(this->pMessagesButton, &QPushButton ::clicked, this, &ActionsWidget::onSendMessage);
+    connect(this, SIGNAL(goToMessages()), this->parent(), SLOT(swapWidgetsMessages() ));
 }
 
 void ActionsWidget::createComponents() {
@@ -82,11 +87,11 @@ void ActionsWidget::onPost() {
 
 
 void ActionsWidget::onSettings() {
-
+    emit goToSettings();
 }
 
 void ActionsWidget::onSendMessage() {
-
+    emit goToMessages();
 }
 
 

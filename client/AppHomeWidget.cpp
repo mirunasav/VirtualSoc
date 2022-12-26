@@ -9,6 +9,7 @@
 #include "ActionsWidget.h"
 #include "Friends/FriendsMenuWidget.h"
 #include "SettingsWidget.h"
+#include "MessagesWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -87,6 +88,17 @@ void AppHomeWidget::swapWidgetsSettings() {
     QWidget *pOldWidget = this->pFeedWidget;
 
     this->pFeedWidget = new SettingsWidget(this);
+
+    this->pSplitter->replaceWidget(1, this->pFeedWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+}
+
+void AppHomeWidget::swapWidgetsMessages() {
+    QWidget *pOldWidget = this->pFeedWidget;
+
+    this->pFeedWidget = new MessagesWidget(this);
 
     this->pSplitter->replaceWidget(1, this->pFeedWidget);
 

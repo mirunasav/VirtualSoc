@@ -445,14 +445,17 @@ bool Server::isPrivate(pthread_t ID) const {
 
     for ( const auto & clientData : this->clientList)
         if ( clientData.threadID == ID ) { // cautam username-ul thread-ului cu ID-ul dat
-           auto privacy = clientData.privacy;
-           int privacyInt = static_cast<int> (privacy);
-           switch(privacyInt)
+
+           switch(clientData.privacy)
            {
-               case 0:
-                   return true; //e private
-               case 1:
-                   return false;
+               case common::privacySetting::PUBLIC:
+                   pthread_mutex_unlock( & threadListLock );
+                   return false; //e public
+                   break;
+               case common::privacySetting::PRIVATE:
+                   pthread_mutex_unlock( & threadListLock );
+                   return true;//e private
+                   break;
            }
             break;
         }
