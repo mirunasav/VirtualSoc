@@ -1,0 +1,4 @@
+user3 3
+vlad 2
+user2 3
+u 1

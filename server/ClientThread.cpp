@@ -6,6 +6,7 @@
 #include "ClientThread.h"
 #include "Server.h"
 #include "../common/common.h"
+#include "RequestHandler.h"
 using namespace common;
 
 ClientThread ::ClientThread(pthread_t threadID) :
@@ -27,7 +28,8 @@ void ClientThread::main() {
     while(status_code != 499)
     {
         //punem intr-un bloc de try si vom arunca exceptii in cas ca apar erori la read/write sau la conexiune
-        status_code = this->treatRequest(common::readRequest(this->clientSocket));
+        //status_code = this->treatRequest(common::readRequest(this->clientSocket));
+        status_code = RequestHandler::handleRequest(* this, common::readRequest(this->clientSocket));
 
     }
     Server::getInstance().disconnect(this->ID);

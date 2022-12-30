@@ -26,6 +26,7 @@ void NewMessageWidget::createComponents() {
     connect(this->pFriendList, SIGNAL(itemClicked(QListWidgetItem *)),this, SLOT(highlightChecked(QListWidgetItem *)));
     connect(this->pSendMessageButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
     connect(this, SIGNAL(sendMessage(std::string &)), this->parent(), SLOT(swapWidgetsSendMessage(std::string &)));
+
 }
 
 void NewMessageWidget::createListWidget() {

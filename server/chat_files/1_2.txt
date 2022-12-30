@@ -1,0 +1,46 @@
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+hello
+salut
+ce faci?
+ < user1 > hei
+ < user2 >  hello
+ < user1 >  ce faci?
+ < user2 >  destul de ok
+ < user1 >  hello
+ < user1 >  sigsegv
+ < user1 >  chestii
+ < user1 >  bruh
+ < user2 >  coaie
+ < user1 >  da coaie

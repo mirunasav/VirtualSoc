@@ -48,7 +48,6 @@ void ChatWidget::createComponents(std::string & usernamesInChat) {
 
 
 void ChatWidget::settleLayouts() {
-    printf("am ajuns in settle Layouts\n");
     this->setLayout(this->pMainLayout);
 
     this->pMainLayout->addItem(this->pUsersInChatLayout);
@@ -87,10 +86,8 @@ void ChatWidget::acquireChatFile() {
       for (int i = 1; i <= linesServerSends; i++) {
           message = common::readString(ServerConnection::getInstance().getSocket());
           this->addMessage(message);
-          printf("am adaugat msj\n");
       }
       this->pMessagesList->scrollToBottom();
-      printf("am ajuns la final la in acquire chat file\n");
 
   }
   catch( std::exception const & ex ) //daca e vreo exceptie, ne reconectam
@@ -98,7 +95,6 @@ void ChatWidget::acquireChatFile() {
       ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
   }
     this->restartTimer();
-    printf("am ajuns dupa restart\n");
 }
 
 void ChatWidget::addMessage(std::string message) {
@@ -115,7 +111,6 @@ void ChatWidget::addMessage(std::string message) {
 }
 
 void ChatWidget::restartTimer() {
-    printf("am ajuns in restart, inceput\n");
     this->pRefreshChatTimer->setInterval(1500);
     this->pRefreshChatTimer->start();
 }

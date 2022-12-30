@@ -8,6 +8,7 @@
 
 #include <QWidget>
 #include <QListWidget>
+#include <QPushButton>
 
 class AllMessagesWidget : public QWidget {
 Q_OBJECT
@@ -15,12 +16,19 @@ private:
     QLayout *pMainLayout {nullptr};
     QLayout *pListLayout {nullptr};
 
+    QPushButton *pOpenChatButton {nullptr};
+
     QListWidget *pAllChatsList {nullptr};
+
+    std::string chatSelected;
 private slots:
-    void onDoubleClick(QListWidgetItem *);
+    void onClick(QListWidgetItem *);
+    void sendMessage();
 signals:
      void sendMessage(std::string &);
 public:
+    constexpr static const char * pOpenChatButtonText = "Open Chat";
+
     explicit AllMessagesWidget(QWidget *pParent);
 
     void initWidget();

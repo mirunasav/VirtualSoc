@@ -45,7 +45,12 @@ add_executable(client client/MainWindow.cpp
         client/Messenger/MessagesWidget.cpp
         client/Messenger/MessagesWidget.h
         client/Messenger/NewMessageWidget.cpp
-        client/Messenger/NewMessageWidget.h client/Messenger/ChatWidget.cpp client/Messenger/ChatWidget.h client/Messenger/AllMessagesWidget.cpp client/Messenger/AllMessagesWidget.h)
+        client/Messenger/NewMessageWidget.h
+        client/Messenger/ChatWidget.cpp
+        client/Messenger/ChatWidget.h
+        client/Messenger/AllMessagesWidget.cpp
+        client/Messenger/AllMessagesWidget.h
+       )
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp
@@ -54,7 +59,10 @@ add_executable(server server/Server.cpp
         common/common.cpp
         common/common.h
         common/errors.cpp
-        common/errors.h)
+        common/errors.h
+        server/RequestHandler.h
+        server/RequestHandler.cpp)
+
 
 
 target_link_libraries(client

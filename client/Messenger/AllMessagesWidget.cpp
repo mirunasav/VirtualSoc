@@ -16,13 +16,15 @@ AllMessagesWidget::AllMessagesWidget(QWidget *pParent):
 void AllMessagesWidget::initWidget() {
     this->createComponents();
     this->settleLayouts();
-    connect(this->pAllChatsList, SIGNAL(itemDoubleClicked(QListWidgetItem *)),this, SLOT(onDoubleClick(QListWidgetItem *)));
+    connect(this->pAllChatsList, SIGNAL(itemClicked(QListWidgetItem *)),this, SLOT(onClick(QListWidgetItem *)));
+    connect(this->pOpenChatButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
     connect(this, SIGNAL( sendMessage(std::string &)), this->parent(),SLOT(swapWidgetsSendMessage(std::string &)));
 }
 
 void AllMessagesWidget::createComponents() {
     this->createListWidget();
     this->pMainLayout = new QVBoxLayout (this);
+    this->pOpenChatButton = new QPushButton(AllMessagesWidget::pOpenChatButtonText, this);
 
 }
 
@@ -47,6 +49,7 @@ void AllMessagesWidget::settleLayouts() {
     this->setLayout(this->pMainLayout);
 
     this->pMainLayout->addWidget(this->pAllChatsList);
+    this->pMainLayout->addWidget(this->pOpenChatButton);
 
 }
 
@@ -72,13 +75,15 @@ void AllMessagesWidget::acquireAllChatsList(QStringList& chatsList) {
 
 }
 
-void AllMessagesWidget::onDoubleClick(QListWidgetItem *item) {
-    std::string chatSelected;
+void AllMessagesWidget::onClick(QListWidgetItem *item) {
     //transmitem toti userii, dar facand replace la virgula cu '|' si adaugand la final '|'
-    chatSelected = item->text().toStdString();
-    std::replace(chatSelected.begin(), chatSelected.end(), ',', '|');
-    chatSelected.append("|");
-    emit sendMessage(chatSelected);
+    this->chatSelected = item->text().toStdString();
+    std::replace(this->chatSelected.begin(), this->chatSelected.end(), ',', '|');
+    this->chatSelected.append("|");
 
+}
+
+void AllMessagesWidget::sendMessage() {
+    emit sendMessage(this->chatSelected);
 }
 
