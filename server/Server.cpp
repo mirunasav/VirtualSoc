@@ -237,7 +237,7 @@ bool Server::createUser( std::string &username,  std::string &password, pthread_
     std::fstream usersFile;
     usersFile.open(Server::pUsersFile);
 
-    std::string usernameFromFile, passwordFromFile,isPrivate;
+    std::string usernameFromFile, passwordFromFile, isPrivate;
 
     while (usersFile >>usernameFromFile >>passwordFromFile>>isPrivate)
     {
@@ -565,9 +565,10 @@ void Server::addChatFile(std::string &selectedUsernames, std::string &chatFileNa
     pthread_mutex_lock(&allChatsFileLock);
     this->currentOpenAllChatsFile.open(Server::pAllChatsFile, std::fstream::in);
     std::string chatNameFromFile, formatedChatNameFromFile;
+
     while(this->currentOpenAllChatsFile >> chatNameFromFile>>formatedChatNameFromFile)
     {
-        if(chatNameFromFile == selectedUsernames)
+        if(formatedChatNameFromFile == chatFileName)
         {
             pthread_mutex_unlock(&allChatsFileLock);
             this->currentOpenAllChatsFile.close();

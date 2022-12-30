@@ -211,11 +211,17 @@ bool LoginWidget::validateInput() {
         this->notificationPopUp(LoginWidget::pUsernameLabelEmpty);
         return false;
     }
-        if(this->pPasswordTextBox->text().isEmpty())
+    if(this->pPasswordTextBox->text().isEmpty())
         {       this->notificationPopUp(LoginWidget::pPasswordLabelEmpty);
         return false;
     }
-
+    if(this->pUsernameTextBox->text().contains('|') ||
+       this->pUsernameTextBox->text().contains(' ') ||
+       this->pUsernameTextBox->text().contains('\n') )
+    {
+        this->notificationPopUp(LoginWidget::pMessageInvalidCharacters);
+        return false;
+    }
     return true;
 }
 

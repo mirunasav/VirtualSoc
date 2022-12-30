@@ -10,6 +10,7 @@
 #include "Friends/FriendsMenuWidget.h"
 #include "SettingsWidget.h"
 #include "Messenger/MessagesWidget.h"
+#include "ServerConnection.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -64,6 +65,7 @@ void AppHomeWidget::swapWidgetsLogOut() {
     //in loc de setCentralWidget
 //    this->pLayout = new QVBoxLayout();
 //    this->setLayout(pLayout);
+    ServerConnection::getInstance().disconnect();
     this->pMainLayout->removeWidget(pOldWidget);
     pMainLayout->addWidget(pCentralWidget);//activez widgetul
 
