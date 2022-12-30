@@ -16,6 +16,7 @@ Q_OBJECT
 private slots:
     void swapWidgetsAllMessages();
     void swapWidgetsNewMessage();
+    void swapWidgetsSendMessage(std::string &);
 
 private:
     QLayout *pMainLayout{nullptr};
@@ -36,6 +37,7 @@ private:
 public:
     constexpr static const char *pAllMessagesLabelText = "All Messages";
     constexpr static const char *pNewMessageLabelText = "Send New Message";
+    constexpr static const char *pChatsLabelText = "Chat";
 
     constexpr static const char *pAllMessagesButtonText = "All Messages";
     constexpr static const char *pNewMessageButtonText = "New Message";

@@ -94,3 +94,29 @@ std::string common:: readString(Socket socket )
     message.shrink_to_fit();
     return message;
 }
+
+std::vector<std::string> common::tokenizeString(std::string stringToTokenize, const char *delimitator) {
+    std::vector<std::string> vectorOfUsernames;
+
+    char *token = strtok(const_cast<char *> (stringToTokenize.c_str()), delimitator);
+    while (token != nullptr)
+    {
+        vectorOfUsernames.emplace_back(token);
+        token = strtok(nullptr, delimitator);
+    }
+    return vectorOfUsernames;
+
+}
+
+std::string common:: vectorToString(std::vector<std::string> vectorOfStrings, const char* delimitator) {
+    std::string finalString;
+    for (int i = 0; i<vectorOfStrings.size(); i++)
+    {
+        finalString.append(vectorOfStrings.at(i));
+        if(i+1 < vectorOfStrings.size())
+            finalString.append(delimitator);
+    }
+    return finalString;
+    //la chatWidget: delimitatorul va fi ", "
+    //la conversie in format de allChatsFile : "|"
+}

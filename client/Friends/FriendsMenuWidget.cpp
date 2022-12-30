@@ -4,7 +4,7 @@
 
 #include <QVBoxLayout>
 #include "FriendsMenuWidget.h"
-#include "../AddFriendsWidget.h"
+#include "AddFriendsWidget.h"
 #include "FriendsList.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :

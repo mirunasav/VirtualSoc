@@ -9,7 +9,7 @@
 #include "ActionsWidget.h"
 #include "Friends/FriendsMenuWidget.h"
 #include "SettingsWidget.h"
-#include "MessagesWidget.h"
+#include "Messenger/MessagesWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )

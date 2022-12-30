@@ -4,7 +4,7 @@
 
 #include <QVBoxLayout>
 #include "NewMessageWidget.h"
-#include "ServerConnection.h"
+#include "../ServerConnection.h"
 
 NewMessageWidget::NewMessageWidget(QWidget *pParent) : QWidget(pParent){
     this->initWidget();
@@ -25,6 +25,7 @@ void NewMessageWidget::createComponents() {
 
     connect(this->pFriendList, SIGNAL(itemClicked(QListWidgetItem *)),this, SLOT(highlightChecked(QListWidgetItem *)));
     connect(this->pSendMessageButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
+    connect(this, SIGNAL(sendMessage(std::string &)), this->parent(), SLOT(swapWidgetsSendMessage(std::string &)));
 }
 
 void NewMessageWidget::createListWidget() {
@@ -35,7 +36,7 @@ void NewMessageWidget::createListWidget() {
 
     this->pFriendList->addItems(friendList);
 
-    QListWidgetItem * item = 0;
+    QListWidgetItem * item = nullptr;
     for(int i = 0; i < this->pFriendList->count(); ++i)
     {
         item = this->pFriendList->item(i);
@@ -87,13 +88,16 @@ void NewMessageWidget::highlightChecked(QListWidgetItem *item) {
 
 void NewMessageWidget::sendMessage() {
 
-    std::string selectedUsernames = "";
+    std::string selectedUsernames;
     for(int i = 0; i < this->pFriendList->count(); ++i)
     {
-       selectedUsernames.append(this->pFriendList->item(i)->text().toStdString());
-       if(i!=this->pFriendList->count() -1)
-           selectedUsernames.append("|");
+        if(this->pFriendList->item(i)->checkState() == Qt::Checked) {
+            selectedUsernames.append(this->pFriendList->item(i)->text().toStdString());
+            selectedUsernames.append("|");
+        }
     }
+     emit  sendMessage(selectedUsernames);
+
 }
 
 void NewMessageWidget::acquireFriendList(QStringList& friendList) {

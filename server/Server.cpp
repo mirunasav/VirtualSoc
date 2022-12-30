@@ -9,6 +9,7 @@
 #include <list>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 #include "ClientThread.h"
 
@@ -23,6 +24,7 @@ Server Server::instance;
 static pthread_mutex_t  threadListLock; // cand accesam lista de threaduri
 static pthread_mutex_t  usersFileLock; // cand accesam usersFIle.txt pt login/sign up
 static pthread_mutex_t  chatFileLock; //cand scriem/citim intr-un chat file
+static pthread_mutex_t  allChatsFileLock; //cand scriem/citim intr-un chat file
 static pthread_mutex_t  feedFileLock;
 static pthread_mutex_t  friendsFileLock;
 //banuiesc ca o sa mai tb unul pt feed, pt cand scriem/citim din feed file?
@@ -90,6 +92,7 @@ Server &Server::setup(short port, int queueSize) {
     pthread_mutex_init ( & usersFileLock, nullptr );
     pthread_mutex_init ( & chatFileLock, nullptr );
     pthread_mutex_init ( & feedFileLock, nullptr );
+    pthread_mutex_init ( & allChatsFileLock, nullptr );
 
     return *this;
 }
@@ -394,13 +397,17 @@ void Server::releaseFile(int type) {
     switch(type)
     {
         case 1: //friendFile
-             this->currentOpenFriendFile.close();
             pthread_mutex_unlock(&friendsFileLock);
+            this->currentOpenFriendFile.close();
             return;
         case 2://chatFile
-            this->currentOpenChatFile.close();
             pthread_mutex_unlock(&chatFileLock);
-            return;
+            this->currentOpenChatFile.close();
+            return ;
+        case 3://allChatsFile
+            pthread_mutex_unlock(&allChatsFileLock);
+            this->currentOpenAllChatsFile.close();
+            return ;
     }
 }
 
@@ -464,6 +471,180 @@ bool Server::isPrivate(pthread_t ID) const {
 
 }
 
+std::fstream &Server::getChatFile(std::string & selectedUsernames, common::openMode mode) {
+
+    pthread_mutex_lock(&chatFileLock);
+    std::string chatFileName = convertToChatFile(selectedUsernames);
+    this->addChatFile(selectedUsernames, chatFileName);
+
+    switch (mode) {
+        case common::openMode::READ:
+            this->currentOpenChatFile.open(chatFileName, std::fstream::in);
+            break;
+        case common::openMode::WRITE:
+            this->currentOpenChatFile.open(chatFileName, std::fstream::out | std::fstream::app);
+            break;
+    }
+    return this->currentOpenChatFile;
+
+   //pot sa adaug mode,daca fisierul nu exista si vr sa citesc din el nu se itnampla nimic
+   //daca nu exista, se creeaza abia cand scriu in el wtf
+    return this->currentOpenChatFile;
+
+}
+
+std::string Server::convertToChatFile(std::string selectedUsernames) {
+   //mai intai parsez sirul
+   const char * delimitator = "|";
+   std::vector<std::string> vectorOfOrdinals;
+   std::string chatFileName = Server::pChatsPath;
+
+   this->tokenizeString(selectedUsernames, delimitator, vectorOfOrdinals);
+
+   this->sortVector(vectorOfOrdinals);
+
+   for(int i = 0; i<vectorOfOrdinals.size(); i++)
+   {
+       chatFileName.append(vectorOfOrdinals.at(i));
+       if(i != vectorOfOrdinals.size()-1)
+           chatFileName.append("_");
+   }
+   chatFileName.append(".txt");
+   return chatFileName;
+
+}
+
+void Server::tokenizeString(const std::string &stringToTokenize, const char *delimitator, std::vector<std::string> &vectorOfOrdinals) {
+    char *token = strtok(const_cast<char *> (stringToTokenize.c_str()), delimitator);
+    int usernameOrdinal ;
+    while(token!=nullptr)
+    {
+        usernameOrdinal = this->getUsernameOrdinal(token);
+        vectorOfOrdinals.emplace_back(std::to_string(usernameOrdinal).c_str())  ;
+        token= strtok(nullptr, delimitator);
+    }
+}
+
+int Server::getUsernameOrdinal(const std::string& username) {
+    pthread_mutex_lock(&usersFileLock);
+
+    std::ifstream usersFile;
+    usersFile.open(Server::pUsersFile);
+    std::string usernameFromFile, passwordFromFile, isPrivate;
+
+    int index = 0;
+    while (usersFile >>usernameFromFile >>passwordFromFile>>isPrivate)
+    {
+        index++;
+        if(username == usernameFromFile )
+        {
+            pthread_mutex_unlock(&usersFileLock);
+            usersFile.close();
+            return index;
+        }
+
+    }
+    pthread_mutex_unlock(&usersFileLock);
+    usersFile.close();
+    return -1;//nu o sa se intample pt ca dau ca parametru doar useri care exista deja
+}
+
+void Server::sortVector(std::vector<std::string> &vectorOfOrdinals) {
+    std::vector <int> vectorInterm;
+    for (const auto& i : vectorOfOrdinals)
+    {
+        vectorInterm.push_back(stoi(i));
+    }
+    vectorOfOrdinals.clear();
+    sort(vectorInterm.begin(), vectorInterm.end());
+    for(auto i : vectorInterm)
+        vectorOfOrdinals.push_back(std::to_string(i));
+}
+
+void Server::addChatFile(std::string &selectedUsernames, std::string &chatFileName) {
+
+    pthread_mutex_lock(&allChatsFileLock);
+    this->currentOpenAllChatsFile.open(Server::pAllChatsFile, std::fstream::in);
+    std::string chatNameFromFile, formatedChatNameFromFile;
+    while(this->currentOpenAllChatsFile >> chatNameFromFile>>formatedChatNameFromFile)
+    {
+        if(chatNameFromFile == selectedUsernames)
+        {
+            pthread_mutex_unlock(&allChatsFileLock);
+            this->currentOpenAllChatsFile.close();
+            return;
+        }
+    }
+    this->currentOpenAllChatsFile.close();
+    this->currentOpenAllChatsFile.open(Server::pAllChatsFile, std::fstream::app);
+    this->currentOpenAllChatsFile<<selectedUsernames<<' '<<chatFileName<<'\n';
+    pthread_mutex_unlock(&allChatsFileLock);
+    this->currentOpenAllChatsFile.close();
+}
+
+void Server::addMessageToChatFile(std::string & selectedUsernames,std::string &message, std::string & senderUsername) {
+    pthread_mutex_lock(&chatFileLock);
+
+    std::string chatFileName = convertToChatFile(selectedUsernames);
+    //dupa ce obtinem chat fileUl , il deschidem pentru append
+    this->currentOpenChatFile.open(chatFileName, std::fstream::out | std::fstream::app);
+    this->currentOpenChatFile << " < "<<senderUsername<<" >  "<<message<<'\n';
+    this->releaseFile(common::typesOfFile::chatFile);
+
+}
+
+std::fstream &Server::getAllChatsFile() {
+    pthread_mutex_lock(&allChatsFileLock);
+
+    this->currentOpenAllChatsFile.open(Server::pAllChatsFile);
+    return this->currentOpenAllChatsFile;
+}
+
+void Server::changePrivacy(std::string username, common::privacySetting privacyType, pthread_t threadID) {
+    //mai intai schimb in fisier si apoi in connected client data
+    //in fisier:
+    pthread_mutex_lock(&usersFileLock);
+
+    std::fstream usersFile;
+    std::string usernameFromFile, passwordFromFile,isPrivate;
+
+    std::fstream newUsersFile;
+    std::string newUsersFileName = "new";//nu o sa ramana asa
+
+    usersFile.open(Server::pUsersFile, std::ifstream::in);
+    auto usersFileName = Server::pUsersFile;
+    //creez un fisier intermediar in care copiez toate liniile
+    newUsersFile.open("new", std::fstream::app);
+
+    while(usersFile>>usernameFromFile>>passwordFromFile>>isPrivate)
+    {
+        if(usernameFromFile == username)
+            newUsersFile << usernameFromFile.c_str() <<' ' << passwordFromFile.c_str() <<' '<< privacyType<<'\n';
+        else
+            newUsersFile << usernameFromFile.c_str() <<' ' << passwordFromFile.c_str() <<' '<<isPrivate<< '\n';
+    }
+    pthread_mutex_unlock(&usersFileLock);
+    usersFile.close();
+    newUsersFile.close();
+    std::remove(usersFileName);
+    std::rename("new", usersFileName);
+
+    //schimb si in connectedclientData
+    pthread_mutex_lock ( & threadListLock );
+
+
+    for (  auto & clientData : this->clientList) {
+        if (clientData.threadID == threadID) { // cautam username-ul thread-ului cu ID-ul dat
+            clientData.privacy = privacyType;
+            pthread_mutex_unlock(&threadListLock);
+            return;
+        }
+    }
+    pthread_mutex_unlock( & threadListLock );
+
+
+
+}
 
 
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {

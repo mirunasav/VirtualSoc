@@ -26,16 +26,7 @@ void LoginWidget ::initWidget() {
 
     //connect(this->pLoginButton, SIGNAL(clicked()), this, SLOT(onConfirmLogin()));
     //in varianta de mai sus, nu verifica daca exista semnalul respectiv; in varianta de mai jos, da, e mai safe
-    connect(this->pLoginButton, &QPushButton :: clicked, this, &LoginWidget ::onConfirmLogin);
-    connect(this, SIGNAL(loginSuccess()), this->parent(), SLOT(swapWidgetsLoginSuccess()));
-    connect(this->pSignUpButton, & QPushButton :: clicked, [this]{
-        this->onSignUp();
-    });//cu lambda functii
-
-    connect(this->pContinueWithoutLogginInButton, &QPushButton ::clicked, [this]{
-        this->onSkip();
-    });
-    connect(this, SIGNAL(notLoggedIn()), this->parent(), SLOT(swapWidgetsSkip()));
+   this->connectComponents();
 
     this->styleComponents();
     //aliniez titlul pe centru
@@ -105,6 +96,22 @@ void LoginWidget::adjustLayouts() {
     this->pLoginLayout->setAlignment( this->pLoginButton, Qt::AlignRight );
 
 }
+
+void LoginWidget::connectComponents() {
+    connect(this->pLoginButton, &QPushButton :: clicked, this, &LoginWidget ::onConfirmLogin);
+    connect(this, SIGNAL(loginSuccess()), this->parent(), SLOT(swapWidgetsLoginSuccess()));
+    connect(this->pSignUpButton, & QPushButton :: clicked, [this]{
+        this->onSignUp();
+    });//cu lambda functii
+
+    connect(this->pContinueWithoutLogginInButton, &QPushButton ::clicked, [this]{
+        this->onSkip();
+    });
+    connect(this, SIGNAL(notLoggedIn()), this->parent(), SLOT(swapWidgetsSkip()));
+}
+
+
+
 void LoginWidget ::styleComponents() {
     //daca vr sa fac styling in CSS la componente; aparent nu e nevoie, face qt singur
 
@@ -218,5 +225,3 @@ void LoginWidget::notificationPopUp(const char *message) {
     QMessageBox::information(this, " ", message,QMessageBox::Ok);
 
 }
-
-

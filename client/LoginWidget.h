@@ -94,6 +94,8 @@ public:
 
     void settleLayouts(); //le pune pe mijlocul ecranului
 
+    void connectComponents();
+
     void adjustLayouts();
 
     void styleComponents();

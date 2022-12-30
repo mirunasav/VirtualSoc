@@ -10,21 +10,29 @@
 #include <QListWidget>
 #include <QPushButton>
 
-class NewMessageWidget : public QWidget{
+class NewMessageWidget : public QWidget {
 Q_OBJECT
 private slots:
+
     void highlightChecked(QListWidgetItem *);
+
     void sendMessage();
+
+signals:
+
+    void sendMessage(std::string &);
+
 private:
-    QLayout *pMainLayout {nullptr};
-    QLayout *pListLayout {nullptr};
+    QLayout *pMainLayout{nullptr};
+    QLayout *pListLayout{nullptr};
     QLayout *pButtonLayout{nullptr};
 
-    QListWidget *pFriendList {nullptr};
+    QListWidget *pFriendList{nullptr};
 
-    QPushButton *pSendMessageButton {nullptr};
+    QPushButton *pSendMessageButton{nullptr};
 public:
     constexpr static const char *pSendMessageButtonText = "Send Message";
+
     explicit NewMessageWidget(QWidget *);
 
     void initWidget();
@@ -36,10 +44,7 @@ public:
     void settleLayouts();
 
     void acquireFriendList(QStringList &);
+
     ~NewMessageWidget() override = default;
-
-    std::string readString(int socket);
 };
-
-
 #endif //QT1_NEWMESSAGEWIDGET_H

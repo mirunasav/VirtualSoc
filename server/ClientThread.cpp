@@ -60,6 +60,21 @@ int ClientThread::treatRequest(common::ClientRequests request) {
         case common::REQUEST_GET_PRIVACY_TYPE:
             this->treatGetPrivacyType();
             return 200;
+        case common::REQUEST_GET_CHAT_FILE_READ:
+            this->treatGetChatFile(common::openMode::READ);
+            return 200;
+        case common::REQUEST_GET_CHAT_FILE_WRITE:
+            this->treatGetChatFile(common::openMode::WRITE);
+            return 200;
+        case common::REQUEST_GET_ALL_CHATS:
+            this->treatGetAllChats();
+            return 200;
+        case common::REQUEST_CHANGE_PRIVACY_TYPE_PRIVATE:
+            this->treatChangePrivacyType(common::privacySetting::PRIVATE);
+            return 200;
+        case common::REQUEST_CHANGE_PRIVACY_TYPE_PUBLIC:
+            this->treatChangePrivacyType(common::privacySetting::PUBLIC);
+            return 200;
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
 
         case common::NO_REQUEST :
@@ -183,7 +198,57 @@ void ClientThread::treatChangeFriendshipType() {
 
     Server::getInstance().changeFriendshipType(requesterUsername, friendUsername,newFriendshipType);
 }
+void ClientThread::treatGetChatFile( common::openMode mode) {
+    auto selectedUsernames = common::readString(this->clientSocket);
 
+    auto requesterUsername =this->getClientUsername();
+    selectedUsernames.append(requesterUsername);
+
+
+    switch(mode)
+    {
+        case common::openMode::READ: {
+            std::fstream & chatFile = Server::getInstance().getChatFile(selectedUsernames, mode);
+            int linesUserSees = 0;
+            readBufferInt(this->clientSocket, linesUserSees);
+
+            std::string fileLine;
+            std::list<std::string> messagesList;
+            while (std::getline(chatFile, fileLine)) {
+                messagesList.push_back(fileLine);
+            }
+
+            int messagesInServerChatFile = messagesList.size();
+            int messagesToSendToClient = messagesInServerChatFile - linesUserSees;
+            common::writeRequestNumber(this->clientSocket, messagesToSendToClient);
+
+            Server::getInstance().releaseFile(common::typesOfFile::chatFile);
+
+            int index = 0;
+
+            for (auto message: messagesList) {
+                if (index < linesUserSees)
+                    index++;
+                else {
+                    common::writeString(this->clientSocket, message);
+                }
+            }
+
+        }
+        break;
+        case common::openMode::WRITE:
+        {
+            auto messageToSend = common::readString(this->clientSocket);
+            Server::getInstance().addMessageToChatFile( selectedUsernames, messageToSend, requesterUsername);
+
+        }
+        break;
+
+
+    }
+
+
+}
 std::string ClientThread::getClientUsername() const
 {
 
@@ -197,6 +262,45 @@ void ClientThread::treatGetPrivacyType() {
     else
         writeResponse(this->clientSocket,ServerResponse::PRIVACY_TYPE_PUBLIC);
 }
+
+void ClientThread::treatGetAllChats() {
+    auto requesterUsername =this->getClientUsername();
+
+    std::fstream & allChatsFile = Server::getInstance().getAllChatsFile();
+    std::string usersInChat, chatFilePath;
+    std::vector <std::string> usersInChatVector;
+    std::list <std::string> chatsWithUser;
+    while (allChatsFile >>usersInChat>>chatFilePath) {
+        //sirul e user1|
+        //parsez sirul
+        usersInChatVector = common::tokenizeString(usersInChat, "|");
+        for (int i = 0; i< usersInChatVector.size(); i++)
+        {
+            if(usersInChatVector.at(i) == requesterUsername)
+            {
+                usersInChatVector.erase(usersInChatVector.begin() + i);
+                chatsWithUser.push_back(common::vectorToString(usersInChatVector,","));
+                continue;
+            }
+        }
+    }
+    Server::getInstance().releaseFile(common::typesOfFile::allChatsFile);
+
+    common::writeRequestNumber(this->clientSocket, chatsWithUser.size());
+   for(auto  i : chatsWithUser)
+   {
+       common::writeString(this->clientSocket, i);
+   }
+
+}
+
+void ClientThread::treatChangePrivacyType(common::privacySetting privacyType) {
+    auto requesterUsername = this->getClientUsername();
+    Server::getInstance().changePrivacy(requesterUsername,privacyType, this->ID);
+    this->isPrivate = Server::getInstance().isPrivate(this->ID);
+}
+
+
 
 /*bool ClientThread::createUser(const std::string &, const std::string &) {
     return false;

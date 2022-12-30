@@ -4,8 +4,10 @@
 
 #include <QVBoxLayout>
 #include "MessagesWidget.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include "NewMessageWidget.h"
+#include "ChatWidget.h"
+#include "AllMessagesWidget.h"
 
 MessagesWidget::MessagesWidget(QWidget *pParent) : QWidget(pParent){
     this->initWidget();
@@ -24,7 +26,7 @@ void MessagesWidget::createComponents() {
     this->pHorizontalSplitter= new QSplitter (Qt::Horizontal);
     this->pVerticalSplitter = new QSplitter (Qt::Vertical);
 
-    this->pChangeableWidget = new QWidget(this);
+    this->pChangeableWidget = new AllMessagesWidget(this);
     this->pButtonsWidget = new QWidget(this);
 
     this->pMainLayout = new QVBoxLayout(this);
@@ -68,7 +70,7 @@ void MessagesWidget::styleComponents() {
 void MessagesWidget::swapWidgetsAllMessages() {
     QWidget *pOldWidget = this->pChangeableWidget;
 
-    this->pChangeableWidget = new QWidget(this); //new all messages widget
+    this->pChangeableWidget = new AllMessagesWidget(this);
 
     this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
 
@@ -86,6 +88,19 @@ void MessagesWidget::swapWidgetsNewMessage() {
     this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
 
     this->pMessagesLabel->setText(MessagesWidget::pNewMessageLabelText);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+}
+
+void MessagesWidget::swapWidgetsSendMessage(std::string & selectedUsernames) {
+    QWidget *pOldWidget = this->pChangeableWidget;
+
+    this->pChangeableWidget = new ChatWidget(this,selectedUsernames);
+
+    this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
+
+    this->pMessagesLabel->setText(MessagesWidget::pChatsLabelText);
 
     pOldWidget->hide();
     delete pOldWidget;

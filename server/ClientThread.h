@@ -62,6 +62,12 @@ public:
 
     void treatGetPrivacyType();
 
+    void treatChangePrivacyType(common::privacySetting);
+
+    void treatGetChatFile(common::openMode);
+
+    void treatGetAllChats();
+
 
 
 

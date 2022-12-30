@@ -8,6 +8,7 @@
 #include <string>
 #include <cstring>
 #include <unistd.h>
+#include <vector>
 
 #define BUFFER_LENGTH 256
 typedef int Socket;
@@ -43,9 +44,17 @@ namespace common {
 
         REQUEST_GET_PRIVACY_TYPE = 370,
 
-        REQUEST_CHANGE_PRIVACY_TYPE = 375,
+        REQUEST_CHANGE_PRIVACY_TYPE_PRIVATE = 375,
 
-        REQUEST_LOGOUT = 390,
+        REQUEST_CHANGE_PRIVACY_TYPE_PUBLIC = 376,
+
+        REQUEST_GET_CHAT_FILE_READ = 380,
+
+        REQUEST_GET_CHAT_FILE_WRITE= 385,
+
+        REQUEST_GET_ALL_CHATS = 390,
+
+        REQUEST_LOGOUT = 490,
 
         NO_REQUEST = 400
 
@@ -74,6 +83,8 @@ namespace common {
 
         PRIVACY_TYPE_PRIVATE = 411,
 
+        USER_HAS_NO_CHATS = 412 , //si o sa scriem "you have no chats yet"? sau cu number of chats?
+
         //cand apesi pe login desi nu esti logat
         ACCES_DENIED_NOT_LOGGED_IN = 404
     };
@@ -81,7 +92,8 @@ namespace common {
     enum typesOfFile : int
     {
         friendFile = 1,
-        chatFile = 2
+        chatFile = 2,
+        allChatsFile = 3,
     };
 
     enum typesOfFriend : int
@@ -95,6 +107,12 @@ namespace common {
         PUBLIC = 0, //!isPrivate
         PRIVATE = 1 //isPrivate
     };
+
+    enum openMode : int
+    {
+        READ = 0,
+        WRITE = 1
+    };
     constexpr static const char * LOCALHOST = "127.0.0.1";
     constexpr static ushort SERVER_PORT = 56000;
     constexpr static const char * SERVER_IP = LOCALHOST;
@@ -107,6 +125,7 @@ namespace common {
     ClientRequests readRequest(Socket socket);
     ServerResponse readResponse (Socket socket);
     std::string readString(Socket socket );
+
     void readBuffer(int fd, void * pBuf);
     int readBufferInt(int fd, int & pBuf);
 
@@ -116,8 +135,10 @@ namespace common {
     void writeString (Socket socket, const std::string &message);
     void writeResponse (Socket , ServerResponse );
 
+    std::vector<std::string> tokenizeString(std::string, const char * );
+    std::string vectorToString (  std::vector<std::string>, const char *);
 
-};
+    };
 
 
 #endif //QT1_COMMON_H

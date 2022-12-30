@@ -81,6 +81,13 @@ void SettingsWidget::applyChanges() {
     this->refresh();
 }
 
-void SettingsWidget::sendChangePrivacyRequest(common::privacySetting) {
-
+void SettingsWidget::sendChangePrivacyRequest(common::privacySetting privacyType) {
+    switch (privacyType) {
+        case common::privacySetting::PUBLIC:
+            common::writeRequest(ServerConnection::getInstance().getSocket(), common::ClientRequests::REQUEST_CHANGE_PRIVACY_TYPE_PUBLIC);
+            break;
+        case common::privacySetting::PRIVATE:
+            common::writeRequest(ServerConnection::getInstance().getSocket(), common::ClientRequests::REQUEST_CHANGE_PRIVACY_TYPE_PRIVATE);
+            break;
+    }
 }

@@ -18,18 +18,7 @@ void ActionsWidget::initWidget()
     this->settleLayouts();
     this->adjustLayouts();
 
-    connect(this->pLogoutButton, &QPushButton ::clicked, this, &ActionsWidget::onLogout);
-    connect(this, SIGNAL(loggedOut()), this->parent(), SLOT(swapWidgetsLogOut()));
-
-    connect(this->pFriendsButton, &QPushButton ::clicked, this, &ActionsWidget::onFriendsButton);
-    connect(this, SIGNAL(goToFriendsMenu()), this->parent(), SLOT(swapWidgetsFriendsMenu()));
-
-    connect(this->pSettingsButton, &QPushButton ::clicked, this, &ActionsWidget::onSettings);
-    connect(this, SIGNAL(goToSettings()), this->parent(), SLOT(swapWidgetsSettings()));
-
-
-    connect(this->pMessagesButton, &QPushButton ::clicked, this, &ActionsWidget::onSendMessage);
-    connect(this, SIGNAL(goToMessages()), this->parent(), SLOT(swapWidgetsMessages() ));
+   this->connectComponents();
 }
 
 void ActionsWidget::createComponents() {
@@ -60,6 +49,20 @@ void ActionsWidget::adjustLayouts() {
     this->pActionsLayout->setAlignment(Qt::AlignCenter);
 
 }
+void ActionsWidget::connectComponents() {
+    connect(this->pLogoutButton, &QPushButton ::clicked, this, &ActionsWidget::onLogout);
+    connect(this, SIGNAL(loggedOut()), this->parent(), SLOT(swapWidgetsLogOut()));
+
+    connect(this->pFriendsButton, &QPushButton ::clicked, this, &ActionsWidget::onFriendsButton);
+    connect(this, SIGNAL(goToFriendsMenu()), this->parent(), SLOT(swapWidgetsFriendsMenu()));
+
+    connect(this->pSettingsButton, &QPushButton ::clicked, this, &ActionsWidget::onSettings);
+    connect(this, SIGNAL(goToSettings()), this->parent(), SLOT(swapWidgetsSettings()));
+
+
+    connect(this->pMessagesButton, &QPushButton ::clicked, this, &ActionsWidget::onSendMessage);
+    connect(this, SIGNAL(goToMessages()), this->parent(), SLOT(swapWidgetsMessages() ));
+}
 
 void ActionsWidget::onLogout() {
     //apelez cv functie care deconecteaza userul
@@ -72,6 +75,7 @@ void ActionsWidget::onLogout() {
 void ActionsWidget::onFriendsButton() {
     emit goToFriendsMenu();
 }
+
 
 void ActionsWidget::newPostPopUp() {
 
@@ -93,7 +97,6 @@ void ActionsWidget::onSettings() {
 void ActionsWidget::onSendMessage() {
     emit goToMessages();
 }
-
 
 
 ActionsWidget::~ActionsWidget()

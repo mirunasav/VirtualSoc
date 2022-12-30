@@ -10,6 +10,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <vector>
 #include "../common/common.h"
 class Server {
 public:
@@ -47,6 +48,8 @@ private:
     //ci doar intern si sa-l dam mai departe cu getInstance();
     constexpr static const char * pUsersFile = "../server/users.txt";
     constexpr static const char * pFriendListFiles= "../server/friend_files";
+    constexpr static const char * pAllChatsFile= "../server/chat_files/all_chats.txt";
+    constexpr static const char * pChatsPath= "../server/chat_files/";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -59,6 +62,7 @@ private:
 
     std::fstream currentOpenFriendFile;
     std::fstream currentOpenChatFile;
+    std::fstream currentOpenAllChatsFile;
 
 public:
     //cream un nou socket
@@ -91,18 +95,36 @@ public:
 
     bool addFriend(std::string &, std::string &);
 
+    void addChatFile (std::string &, std::string &);
+
+    void addMessageToChatFile(std::string &, std::string &, std::string &);
+
     void removeFriendFromOneList(std::string &, std::string &);
 
     void removeFriendFromBothLists(std::string &, std::string &);
 
     void changeFriendshipType(std::string &,std::string &, std::string &);
 
+    void tokenizeString(const std::string &, const char *delimitator, std::vector<std::string> &);
+
+    void sortVector (std::vector<std::string> &);
+
+    int getUsernameOrdinal(const std::string&);
+
     std::string getUsername (pthread_t ID) const ;
 
     bool isPrivate(pthread_t ID) const;
+
+    void changePrivacy(std::string, common::privacySetting, pthread_t);
     std::string createFriendListFileName (std::string &);
 
+    std::string convertToChatFile (std::string );
+
     std::fstream & getFriendListFile( std::string &);
+
+    std::fstream &getChatFile (std::string &, common::openMode);
+
+    std::fstream &getAllChatsFile ();
 
     void releaseFile(int type); //1->friendFile, 2->ChatFile
 

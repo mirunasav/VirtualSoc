@@ -66,6 +66,7 @@ public:
     void createComponents();
     void settleLayouts();
     void adjustLayouts(); //minimum /maximum size for buttons, alignment
+    void connectComponents();
 
     void newPostPopUp();
     ~ActionsWidget() override;
