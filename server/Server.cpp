@@ -230,6 +230,7 @@ std::string Server::getUsername(pthread_t ID) const{
 
 
 
+
 bool Server::createUser( std::string &username,  std::string &password, pthread_t requestThreadID) {
     pthread_mutex_lock(&usersFileLock);
 
@@ -420,13 +421,11 @@ Server &Server::disconnect(pthread_t threadID) {
 Server &Server::logout(pthread_t threadID) {
     pthread_mutex_lock( & threadListLock );
 
-
     for (  const auto & clientData : this->clientList )
         if ( clientData.threadID == threadID ) {
             this->clientList.remove( clientData );
             break;
         }
-
     pthread_mutex_unlock(&threadListLock);
 
     return *this;

@@ -11,7 +11,21 @@ class RequestHandler {
 public:
     RequestHandler() = default;
     static int handleRequest (ClientThread & , common::ClientRequests);
-    static void handleLoginRequest (ClientThread & );
+    static void handleLogin (ClientThread & );
+    static void handleSignUp (ClientThread & );
+    static void handleAddFriends (ClientThread & );
+    static void handleGetNumberOfFriends (ClientThread & );
+    static void handleGetFriendList (ClientThread & );
+    static void handleRemoveFriend (ClientThread & );
+    static void handleChangeFriendshipType (ClientThread & );
+    static void handleGetPrivacyType (ClientThread & );
+    static void handleChangePrivacyType (ClientThread & , common::privacySetting); //private si public
+    static void handleGetChatFile (ClientThread & , common::openMode);//read si write
+    static void handleGetAllChats (ClientThread & );
+    static void handleLogout (ClientThread & );
+    static void handleNoRequest (ClientThread & ); //cand se inchide random clientul, nu din logout
+    static std::string getClientUsername (ClientThread &);
+
 
 };
 

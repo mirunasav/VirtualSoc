@@ -33,38 +33,9 @@ public:
 
     //treat requests o sa le fac intr un request handler mai incolo;
 
-    int treatRequest(common::ClientRequests);
-
-    std::string getClientUsername() const;
-
-    void treatSignUp() ;
-
-    void treatLogout() ;
-
-    void treatLogin();
-
-    void treatAddFriends();
-
-    void treatGetFriendList();
-
-    void treatGetNumberOfFriends();
-
-    void treatRemoveFriend();
-
-    void treatChangeFriendshipType();
-
-    void treatGetPrivacyType();
-
-    void treatChangePrivacyType(common::privacySetting);
-
-    void treatGetChatFile(common::openMode);
-
-    void treatGetAllChats();
-
-
     Socket clientSocket;
-//id ul threadului alocat
-pthread_t ID;
+    //id ul threadului alocat
+    pthread_t ID;
     bool loggedIn {false};
     bool isPrivate {false};
 };

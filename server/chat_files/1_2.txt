@@ -44,3 +44,5 @@ ce faci?
  < user1 >  bruh
  < user2 >  coaie
  < user1 >  da coaie
+ < user1 >  yes
+ < user1 >  alo

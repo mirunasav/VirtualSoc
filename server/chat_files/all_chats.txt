@@ -1,5 +1,5 @@
 user2|user1 ../server/chat_files/1_2.txt
-user3|user2|user1 ../server/chat_files/1_2_3.txt
-user2|user3 ../server/chat_files/2_3.txt
-user3|user1 ../server/chat_files/1_3.txt
-vlad|user2|user1 ../server/chat_files/1_2_7.txt
+vlad|user1 ../server/chat_files/1_7.txt
+user2|vlad|user1 ../server/chat_files/1_2_7.txt
+user1|vlad ../server/chat_files/1_7.txt
+vlad|user1|user2 ../server/chat_files/1_2_7.txt
