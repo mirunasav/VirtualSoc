@@ -64,6 +64,8 @@ private:
     std::fstream currentOpenChatFile;
     std::fstream currentOpenAllChatsFile;
 
+
+
 public:
     //cream un nou socket
     static auto newSocket();

@@ -6,6 +6,11 @@
 #include "../common/common.h"
 #include "Server.h"
 int RequestHandler::handleRequest( ClientThread  & client,  common::ClientRequests request) {
+    //map de la enum la functie in loc de request
+    //map : ClientRequest - std::function
+    //std::unordered_map <int, std::function <void (ClientThread &)> > map;
+    //m.emplace(common::requestlogin , &handlelogin)
+    //m[request](client);
     switch(request)
     {
         case common::ClientRequests::REQUEST_LOGIN:
@@ -53,11 +58,9 @@ int RequestHandler::handleRequest( ClientThread  & client,  common::ClientReques
             return 200;
 
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
-
         case common::NO_REQUEST :
             Server::getInstance().disconnect(client.ID);
             return 499;
-
 
     }
 

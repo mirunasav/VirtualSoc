@@ -6,6 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+include_directories(server/dependencies/cds/include)
 
 find_package(Qt6 COMPONENTS
   Core

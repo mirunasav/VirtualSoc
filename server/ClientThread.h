@@ -24,7 +24,7 @@ public:
 
 
     //primeste de la server thread id ul
-    explicit ClientThread (pthread_t threadID);
+    explicit ClientThread (pthread_t threadID, Socket );
 
     //obtine socketul de comunicare
     void acquireSocketFromServer () ;

@@ -9,8 +9,8 @@
 #include "RequestHandler.h"
 using namespace common;
 
-ClientThread ::ClientThread(pthread_t threadID) :
-            ID(threadID), clientSocket(Server::INVALID_SOCKET){
+ClientThread ::ClientThread(pthread_t threadID, Socket clientSocket) :
+            ID(threadID), clientSocket(clientSocket){
 
 }
 
@@ -21,8 +21,8 @@ void ClientThread::acquireSocketFromServer() {
 //in run :
 //while : astept un request, il pasez la requestHandler;
 void ClientThread::main() {
-    while(this->clientSocket == Server::INVALID_SOCKET)
-        this->acquireSocketFromServer();
+   // while(this->clientSocket == Server::INVALID_SOCKET)
+     //   this->acquireSocketFromServer();
 
     int status_code = 0;
     while(status_code != 499)

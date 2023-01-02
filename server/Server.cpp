@@ -16,6 +16,11 @@
 constexpr Socket INVALID_SOCKET =  (Socket) SOCKET_ERROR;
 
 Server Server::instance;
+struct clientThreadInitStruct
+{
+    pthread_t clientThreadID;
+    Socket clientSocket;
+};
 
 //ma asigur ca doua threaduri nu acceseaza un fisier in acelasi timp
 //blochez sectiuni de cod, un singur thread va fi in bucata
@@ -99,8 +104,9 @@ Server &Server::setup(short port, int queueSize) {
 
 
 void *Server::clientThreadInit(void *pArg) {
-  //
-    ClientThread ( ( * ( pthread_t * ) pArg ) ).main();
+    auto clientThreadData = (clientThreadInitStruct *) pArg;
+
+    ClientThread ( clientThreadData->clientThreadID , clientThreadData->clientSocket).main();
     return nullptr;
 }
 
@@ -122,7 +128,14 @@ void Server::run() {
          //cream un thread nou, care isi salveaza id ul in newClientData.threadID
          //si are ca parametru acelasi threadID, dar modificat
 
-         pthread_create(& newClientData.threadID, nullptr, clientThreadInit, & newClientData.threadID);
+         auto clientThreadData = new clientThreadInitStruct;
+
+         clientThreadData->clientSocket = newClientData.socket;
+
+         pthread_create(& clientThreadData->clientThreadID, nullptr, clientThreadInit,  clientThreadData);
+
+         newClientData.threadID = clientThreadData->clientThreadID;
+
          this->addClientData(newClientData); //adaugam clientData(socket , threadID, username) la lista retinuta de server
     }
 
