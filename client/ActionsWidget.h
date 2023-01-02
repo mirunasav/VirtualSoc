@@ -18,10 +18,11 @@ private slots:
     void onSettings(); //deschidem o fereastra cu setari
     void onLogout(); //deconectez userul de la server si ma intorc la run window
     void onFriendsButton(); //schimb partea din dreapta, cu widgetul meniului de friends
+    void onMyFeedButton();
 
 private:
 
-    QPushButton *pMyProfileButton {nullptr};
+    QPushButton *pMyFeedButton {nullptr};
     QPushButton *pPostButton {nullptr};
     QPushButton *pFriendsButton {nullptr};
 
@@ -42,10 +43,12 @@ signals:
     void goToFriendsMenu();
     void goToSettings();
     void goToMessages();
+    void goToMyFeed();
+    void goToNewPost();
 
 public:
     //constantele
-    constexpr static const char *pMyProfileButtonText = "My Profile";
+    constexpr static const char *pMyFeedButtonText = "My Feed";
     constexpr static const char *pPostButtonText = "New Post";
     constexpr static const char *pFriendsButtonText = "Friends";
     constexpr static const char *pMessagesButtonText = "Messages";

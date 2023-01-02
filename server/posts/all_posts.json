@@ -1,0 +1,20 @@
+{
+    "posts" : 
+    [
+        {
+            "from" : "user1",
+            "text" : "Prima postare",
+            "visibleTo" : "0"
+        },
+        {
+            "from" : "user2",
+            "text" : "Prima postare a mea",
+            "visibleTo" : "3"
+        },
+        {
+            "from" : "user3",
+            "text" : "ce postare misto rau",
+            "visibleTo" : "2"
+        }
+    ]
+}

@@ -15,6 +15,8 @@ private slots:
     void swapWidgetsFriendsMenu();
     void swapWidgetsSettings();
     void swapWidgetsMessages();
+    void swapWidgetsMyFeed();
+    void swapWidgetsNewPost();
 
 private:
     QWidget * pCentralWidget {nullptr};

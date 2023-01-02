@@ -118,7 +118,7 @@ public:
     bool isPrivate(pthread_t ID) const;
 
     void changePrivacy(std::string, common::privacySetting, pthread_t);
-    std::string createFriendListFileName (std::string &);
+    static std::string createFriendListFileName (std::string &);
 
     std::string convertToChatFile (std::string );
 

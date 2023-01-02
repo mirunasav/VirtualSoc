@@ -11,11 +11,11 @@ FeedWidget:: FeedWidget(QWidget *pParentWindow):
 }
 void FeedWidget::initWidget()
 {
-   QPalette pal = QPalette();
+   /*QPalette pal = QPalette();
    pal.setColor(QPalette::Window, Qt::white);
    this->setAutoFillBackground(true);
    this->setPalette(pal);
-   this->show();
+   this->show();*/
    createComponents();
    settleLayouts();
 }

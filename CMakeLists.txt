@@ -51,7 +51,7 @@ add_executable(client client/MainWindow.cpp
         client/Messenger/ChatWidget.h
         client/Messenger/AllMessagesWidget.cpp
         client/Messenger/AllMessagesWidget.h
-       )
+        client/NewPostWidget.cpp client/NewPostWidget.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

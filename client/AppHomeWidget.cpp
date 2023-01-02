@@ -11,6 +11,7 @@
 #include "SettingsWidget.h"
 #include "Messenger/MessagesWidget.h"
 #include "ServerConnection.h"
+#include "NewPostWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -101,6 +102,28 @@ void AppHomeWidget::swapWidgetsMessages() {
     QWidget *pOldWidget = this->pFeedWidget;
 
     this->pFeedWidget = new MessagesWidget(this);
+
+    this->pSplitter->replaceWidget(1, this->pFeedWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+}
+
+void AppHomeWidget::swapWidgetsMyFeed() {
+    QWidget *pOldWidget = this->pFeedWidget;
+
+    this->pFeedWidget = new FeedWidget(this);
+
+    this->pSplitter->replaceWidget(1, this->pFeedWidget);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+}
+
+void AppHomeWidget::swapWidgetsNewPost() {
+    QWidget *pOldWidget = this->pFeedWidget;
+
+    this->pFeedWidget = new NewPostWidget(this);
 
     this->pSplitter->replaceWidget(1, this->pFeedWidget);
 

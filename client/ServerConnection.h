@@ -19,10 +19,11 @@ private:
 
     //constructorul e privat ca sa nu poate construi userul obiecte
     //de tipul asta, doar foloseste instanta
-    ServerConnection() = default;
+
     static constexpr Socket INVALID_SOCKET =  (Socket) SOCKET_ERROR;
 
 public:
+    ServerConnection() = default;
     static ServerConnection &getInstance();
 
     constexpr bool isConnected() const {

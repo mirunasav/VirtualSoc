@@ -25,7 +25,7 @@ void ActionsWidget::createComponents() {
 
     this->pActionsLayout = new QVBoxLayout(this);
 
-    this->pMyProfileButton = new QPushButton(ActionsWidget::pMyProfileButtonText, this);
+    this->pMyFeedButton = new QPushButton(ActionsWidget::pMyFeedButtonText, this);
     this->pPostButton = new QPushButton(ActionsWidget::pPostButtonText, this);
     this->pFriendsButton = new QPushButton(ActionsWidget::pFriendsButtonText, this);
     this->pMessagesButton = new QPushButton(ActionsWidget::pMessagesButtonText, this);
@@ -34,7 +34,7 @@ void ActionsWidget::createComponents() {
 }
 
 void ActionsWidget::settleLayouts() {
-    this->pActionsLayout->addWidget(this->pMyProfileButton);
+    this->pActionsLayout->addWidget(this->pMyFeedButton);
     this->pActionsLayout->addWidget(this->pPostButton);
     this->pActionsLayout->addWidget(this->pFriendsButton);
     this->pActionsLayout->addWidget(this->pMessagesButton);
@@ -62,6 +62,12 @@ void ActionsWidget::connectComponents() {
 
     connect(this->pMessagesButton, &QPushButton ::clicked, this, &ActionsWidget::onSendMessage);
     connect(this, SIGNAL(goToMessages()), this->parent(), SLOT(swapWidgetsMessages() ));
+
+    connect(this->pMyFeedButton, &QPushButton ::clicked, this, &ActionsWidget::onMyFeedButton);
+    connect(this, SIGNAL(goToMyFeed()), this->parent(),SLOT(swapWidgetsMyFeed()));
+
+    connect(this->pPostButton, &QPushButton ::clicked, this, &ActionsWidget::onPost);
+    connect(this, SIGNAL(goToNewPost()), this->parent(),SLOT(swapWidgetsNewPost()));
 }
 
 void ActionsWidget::onLogout() {
@@ -86,7 +92,7 @@ void ActionsWidget::onMyProfile() {
 }
 
 void ActionsWidget::onPost() {
-
+    emit goToNewPost();
 }
 
 
@@ -96,6 +102,10 @@ void ActionsWidget::onSettings() {
 
 void ActionsWidget::onSendMessage() {
     emit goToMessages();
+}
+
+void ActionsWidget::onMyFeedButton() {
+    emit goToMyFeed();
 }
 
 

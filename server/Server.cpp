@@ -340,8 +340,8 @@ int Server::getNumberOfFriends(std::string &username) {
     friendListFile.close();
     pthread_mutex_unlock(&friendsFileLock);
     return numberOfFriends;
-
 }
+
 void Server::changeFriendshipType(std::string & requesterUsername, std::string &friendUsername, std::string &newFriendshipType) {
     pthread_mutex_lock(&friendsFileLock);
 

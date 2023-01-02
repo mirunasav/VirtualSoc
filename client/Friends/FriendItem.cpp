@@ -106,7 +106,8 @@ void FriendItem::onRemoveClick() {
     emit remove(this->pFriendUsername->text().toStdString());
 }
 
-void FriendItem::onChangeTypeClick(int index) {
+void FriendItem::
+onChangeTypeClick(int index) {
     switch(index)
     {
         case 0://Normal friend
