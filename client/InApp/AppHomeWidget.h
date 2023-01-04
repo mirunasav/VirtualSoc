@@ -4,10 +4,10 @@
 #define QT1_APPHOMEWIDGET_H
 
 
-#include "MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 #include <QWidget>
 #include <QSplitter>
-#include "Posts/FeedWidget.h"
+#include "../Posts/FeedWidget.h"
 class AppHomeWidget : public QWidget{
 Q_OBJECT
 private slots:

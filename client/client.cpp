@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QPushButton>
-#include "MainWindow.h"
+#include "LogInInterface/MainWindow.h"
 #include <QApplication>
 #include "ServerConnection.h"
 #include "../common/common.h"

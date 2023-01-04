@@ -4,7 +4,7 @@
 
 #include <QVBoxLayout>
 #include "MessagesWidget.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 #include "NewMessageWidget.h"
 #include "ChatWidget.h"
 #include "AllMessagesWidget.h"

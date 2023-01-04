@@ -6,12 +6,12 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include "LoginWidget.h"
-#include "AppHomeWidget.h"
-#include "NotNormalUser.h"
-#include "ServerConnection.h"
+#include "../InApp/AppHomeWidget.h"
+#include "../InApp/NotNormalUser.h"
+#include "../ServerConnection.h"
 
-uint MainWindow::WIDTH = 1280;
-uint MainWindow::HEIGHT = 720;
+int MainWindow::WIDTH = 1280;
+int MainWindow::HEIGHT = 720;
 char const * MainWindow::pWindowTitle = "VirtualSoc";
 
 MainWindow:: MainWindow (QWidget *parent) :

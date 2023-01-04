@@ -4,8 +4,8 @@
 
 #include <QHBoxLayout>
 #include "SettingsWidget.h"
-#include "../common/common.h"
-#include "ServerConnection.h"
+#include "../../common/common.h"
+#include "../ServerConnection.h"
 using namespace common;
 
 SettingsWidget::SettingsWidget(QWidget *pParent) :

@@ -1,6 +1,6 @@
 #include "LoginWidget.h"
 #include "MainWindow.h"
-#include "ServerConnection.h"
+#include "../ServerConnection.h"
 #include <QKeyEvent>
 #include <QMessageBox>
 

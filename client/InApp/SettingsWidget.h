@@ -10,7 +10,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
-#include "../common/common.h"
+#include "../../common/common.h"
 
 class SettingsWidget : public QWidget{
 Q_OBJECT

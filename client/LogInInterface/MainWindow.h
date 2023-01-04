@@ -27,8 +27,8 @@ public slots:
 public:
     static char const * pWindowTitle;
 
-    static uint WIDTH ;
-    static uint HEIGHT;
+    static int WIDTH ;
+    static int HEIGHT;
 
     explicit MainWindow (QWidget * parent = nullptr);
 

@@ -443,7 +443,7 @@ void Server::releaseFile(int type) {
     }
 }
 
-Server &Server::disconnect(pthread_t threadID) {
+void Server::disconnect(pthread_t threadID) {//daca s a stricat, fa Server & ca inainte
    this->logout(threadID);
 }
 
@@ -491,11 +491,9 @@ bool Server::isPrivate(pthread_t ID) const {
                    pthread_mutex_unlock( & threadListLock );
                    return false; //e public
            }
-            break;
         }
 
     pthread_mutex_unlock( & threadListLock );
-
 }
 
 bool Server::isAdmin(pthread_t ID) const {
@@ -510,17 +508,14 @@ bool Server::isAdmin(pthread_t ID) const {
                 case common::privacySetting::ADMIN:
                     pthread_mutex_unlock( & threadListLock );
                     return true;//e private
-                    break;
+
                 default:
                     pthread_mutex_unlock( & threadListLock );
                     return false; //e public
-                    break;
             }
-            break;
         }
 
     pthread_mutex_unlock( & threadListLock );
-
 }
 
 std::fstream &Server::getChatFile(std::string & selectedUsernames, common::openMode mode) {

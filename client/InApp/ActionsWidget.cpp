@@ -5,8 +5,8 @@
 #include <QVBoxLayout>
 #include <QMenuBar>
 #include "ActionsWidget.h"
-#include "MainWindow.h"
-#include "ServerConnection.h"
+#include "../LogInInterface/MainWindow.h"
+#include "../ServerConnection.h"
 ActionsWidget:: ActionsWidget(QWidget *pParentWindow) : QWidget(pParentWindow)
 {
     this->initWidget();

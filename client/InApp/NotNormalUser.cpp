@@ -4,10 +4,9 @@
 
 #include <QHBoxLayout>
 #include "NotNormalUser.h"
-#include "Posts/FeedWidget.h"
-#include "ActionsWidget.h"
-#include "MainWindow.h"
-#include "ServerConnection.h"
+#include "../Posts/FeedWidget.h"
+#include "../LogInInterface/MainWindow.h"
+#include "../ServerConnection.h"
 
 NotNormalUser::NotNormalUser(QWidget *pParentWindow, bool isAdmin):
         QWidget ( pParentWindow ){
@@ -85,8 +84,8 @@ void NotNormalUser::swapWidgetsReturn() {
     QWidget* pOldWidget = this->pCentralWidget;
     this->pCentralWidget = new MainWindow(nullptr);
 
-    //common::writeRequest(ServerConnection::getInstance().getSocket())
     ServerConnection::getInstance().disconnect();
+
     this->pLayout->removeWidget(pOldWidget);
     pLayout->addWidget(pCentralWidget);
 

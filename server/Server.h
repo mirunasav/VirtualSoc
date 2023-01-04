@@ -163,7 +163,7 @@ public:
     void releaseFile(int type); //1->friendFile, 2->ChatFile
     //deconectam de la threadul respectiv clientul
     //returneaza referinta, in caz ca vrem sa folosim intr-o comanda inlantuita
-    Server &disconnect (pthread_t);
+    void disconnect (pthread_t);
 
     Server &logout (pthread_t); //cand facem logout
 

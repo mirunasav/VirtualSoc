@@ -8,7 +8,7 @@
 #include "../ServerConnection.h"
 #include "ChatWidget.h"
 #include "../../common/common.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 #include <QKeyEvent>
 
 ChatWidget::ChatWidget(QWidget *pParent, std::string &usernamesInChat) :

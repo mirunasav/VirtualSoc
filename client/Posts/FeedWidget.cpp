@@ -7,7 +7,7 @@
 #include "../../common/common.h"
 #include "../ServerConnection.h"
 #include "PostWidget.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 #include <QTimer>
 #include <QScrollBar>
 #include <iostream>

@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include "../ServerConnection.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 #include "AddFriendsWidget.h"
 
 AddFriendsWidget::AddFriendsWidget(QWidget *pParentWindow) :

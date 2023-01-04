@@ -5,13 +5,13 @@
 #include "AppHomeWidget.h"
 #include <qwidget.h>
 #include <QStyleOption>
-#include "Posts/FeedWidget.h"
+#include "../Posts/FeedWidget.h"
 #include "ActionsWidget.h"
-#include "Friends/FriendsMenuWidget.h"
+#include "../Friends/FriendsMenuWidget.h"
 #include "SettingsWidget.h"
-#include "Messenger/MessagesWidget.h"
-#include "ServerConnection.h"
-#include "Posts/NewPostWidget.h"
+#include "../Messenger/MessagesWidget.h"
+#include "../ServerConnection.h"
+#include "../Posts/NewPostWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )

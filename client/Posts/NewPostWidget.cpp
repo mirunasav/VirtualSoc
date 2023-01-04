@@ -8,7 +8,7 @@
 #include "NewPostWidget.h"
 #include "../ServerConnection.h"
 #include "../../common/common.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 NewPostWidget::NewPostWidget(QWidget *pParent) : QWidget(pParent) {
     this->initWidget();
 }

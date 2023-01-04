@@ -6,7 +6,7 @@
 #include "FriendsMenuWidget.h"
 #include "AddFriendsWidget.h"
 #include "FriendsList.h"
-#include "../MainWindow.h"
+#include "../LogInInterface/MainWindow.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
         QWidget(pParentWindow ){

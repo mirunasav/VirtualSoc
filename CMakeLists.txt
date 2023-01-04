@@ -14,18 +14,18 @@ find_package(Qt6 COMPONENTS
   Widgets
   REQUIRED)
 
-add_executable(client client/MainWindow.cpp
-        client/MainWindow.h
+add_executable(client client/LogInInterface/MainWindow.cpp
+        client/LogInInterface/MainWindow.h
         client/client.cpp
-        client/AppHomeWidget.cpp
-        client/AppHomeWidget.h
-        client/LoginWidget.cpp
-        client/LoginWidget.h
+        client/InApp/AppHomeWidget.cpp
+        client/InApp/AppHomeWidget.h
+        client/LogInInterface/LoginWidget.cpp
+        client/LogInInterface/LoginWidget.h
         client/Posts/FeedWidget.cpp
         client/Posts/FeedWidget.h
-        client/ActionsWidget.cpp
-        client/ActionsWidget.h
-        client/NotNormalUser.cpp client/NotNormalUser.h
+        client/InApp/ActionsWidget.cpp
+        client/InApp/ActionsWidget.h
+        client/InApp/NotNormalUser.cpp client/InApp/NotNormalUser.h
        common/common.cpp common/common.h
         client/ServerConnection.cpp
         client/ServerConnection.h
@@ -33,16 +33,16 @@ add_executable(client client/MainWindow.cpp
         client/Friends/FriendsMenuWidget.h
         client/Friends/AddFriendsWidget.cpp
         client/Friends/AddFriendsWidget.h
-        client/SettingsWidget.cpp
-        client/SettingsWidget.h
+        client/InApp/SettingsWidget.cpp
+        client/InApp/SettingsWidget.h
         common/errors.cpp
         common/errors.h
         client/Friends/FriendsList.cpp
         client/Friends/FriendsList.h
         client/Friends/FriendItem.cpp
         client/Friends/FriendItem.h
-        client/SettingsWidget.cpp
-        client/SettingsWidget.h
+        client/InApp/SettingsWidget.cpp
+        client/InApp/SettingsWidget.h
         client/Messenger/MessagesWidget.cpp
         client/Messenger/MessagesWidget.h
         client/Messenger/NewMessageWidget.cpp
