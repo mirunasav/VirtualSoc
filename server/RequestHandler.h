@@ -23,6 +23,10 @@ public:
     static void handleGetChatFile (ClientThread & , common::openMode);//read si write
     static void handleGetAllChats (ClientThread & );
     static void handleLogout (ClientThread & );
+    static void handleAddNewPost (ClientThread & );
+    static void handleLoadFeed (ClientThread & );
+    static void handleLoadFeedNotLoggedIn (ClientThread & );
+    static void handleRemovePost (ClientThread & );
     static void handleNoRequest (ClientThread & ); //cand se inchide random clientul, nu din logout
     static std::string getClientUsername (ClientThread &);
 

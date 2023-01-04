@@ -5,13 +5,13 @@
 #include "AppHomeWidget.h"
 #include <qwidget.h>
 #include <QStyleOption>
-#include "FeedWidget.h"
+#include "Posts/FeedWidget.h"
 #include "ActionsWidget.h"
 #include "Friends/FriendsMenuWidget.h"
 #include "SettingsWidget.h"
 #include "Messenger/MessagesWidget.h"
 #include "ServerConnection.h"
-#include "NewPostWidget.h"
+#include "Posts/NewPostWidget.h"
 
 AppHomeWidget:: AppHomeWidget(QWidget * pParentWindow)  :
         QWidget ( pParentWindow )
@@ -35,7 +35,7 @@ void AppHomeWidget::createComponents() {
   this->pLayout = new QHBoxLayout();
   this->pMainLayout = new QHBoxLayout();
 
-  this->pFeedWidget = new FeedWidget(this);
+  this->pFeedWidget = new FeedWidget(this,true);
   this->pActionsWidget = new ActionsWidget(this);
 
   this->pSplitter = new QSplitter(Qt::Horizontal);
@@ -112,7 +112,7 @@ void AppHomeWidget::swapWidgetsMessages() {
 void AppHomeWidget::swapWidgetsMyFeed() {
     QWidget *pOldWidget = this->pFeedWidget;
 
-    this->pFeedWidget = new FeedWidget(this);
+    this->pFeedWidget = new FeedWidget(this,true);
 
     this->pSplitter->replaceWidget(1, this->pFeedWidget);
 

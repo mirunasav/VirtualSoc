@@ -50,6 +50,7 @@ private:
     constexpr static const char * pFriendListFiles= "../server/friend_files";
     constexpr static const char * pAllChatsFile= "../server/chat_files/all_chats.txt";
     constexpr static const char * pChatsPath= "../server/chat_files/";
+    constexpr static const char * pPostsJSONPath= "../server/posts/all_posts.json";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -63,6 +64,7 @@ private:
     std::fstream currentOpenFriendFile;
     std::fstream currentOpenChatFile;
     std::fstream currentOpenAllChatsFile;
+    std::fstream currentOpenAllPostsJson;
 
 
 
@@ -89,17 +91,16 @@ public:
     //verificam daca am primit un user si o parola valide;
     //daca sunt ok, ne tb si threadul ; salvam datele userului
 
+    //functions for Login / SignUp:
     bool checkLogin(std::string &, std:: string &, pthread_t);
 
     bool createUser( std::string &,  std:: string &, pthread_t);
 
-    bool checkUserExists( std::string &);
+    static bool checkUserExists( std::string &);
 
-    bool addFriend(std::string &, std::string &);
 
-    void addChatFile (std::string &, std::string &);
-
-    void addMessageToChatFile(std::string &, std::string &, std::string &);
+    //functions for Friends:
+    static bool addFriend(std::string &, std::string &);
 
     void removeFriendFromOneList(std::string &, std::string &);
 
@@ -107,31 +108,59 @@ public:
 
     void changeFriendshipType(std::string &,std::string &, std::string &);
 
-    void tokenizeString(const std::string &, const char *delimitator, std::vector<std::string> &);
-
-    void sortVector (std::vector<std::string> &);
-
-    int getUsernameOrdinal(const std::string&);
-
-    std::string getUsername (pthread_t ID) const ;
-
-    bool isPrivate(pthread_t ID) const;
-
-    void changePrivacy(std::string, common::privacySetting, pthread_t);
     static std::string createFriendListFileName (std::string &);
 
-    std::string convertToChatFile (std::string );
-
     std::fstream & getFriendListFile( std::string &);
+
+    static int getNumberOfFriends(std::string &);
+
+
+    //functions for Messages:
+    void addChatFile (std::string &, std::string &);
+
+    void addMessageToChatFile(std::string &, std::string &, std::string &);
+
+    std::string convertToChatFile (std::string );
 
     std::fstream &getChatFile (std::string &, common::openMode);
 
     std::fstream &getAllChatsFile ();
 
+    void tokenizeString(const std::string &, const char *delimitator, std::vector<std::string> &);
+
+    static void sortVector (std::vector<std::string> &);
+
+    static int getUsernameOrdinal(const std::string&);
+
+
+    //functions for Settings:
+    void changePrivacy(const std::string&, common::privacySetting, pthread_t);
+
+
+    //functions for user information: privacyType, isAdmin, username
+    std::string getUsername (pthread_t ID) const ;
+
+    bool isPrivate(pthread_t ID) const;
+
+    bool isAdmin(pthread_t ID) const;
+
+    Socket getClientSocket(pthread_t) const;
+
+    //functions for posts
+    std::vector <common::Post>  getAllPosts (std::string &username);
+
+    static std::vector <common::Post>  getAllPostsNotLoggedIn ();
+
+    static void removePost(int );
+
+    static void addPost (const std::string& username, const std::string& text, const std::string& visibleToWhom, const std::string& date);
+
+    bool userInGroupTarget(std::string userWhoPosts, const std::string& userWhoSees, const std::string& friendshipType);
+
+
+    //alte functii
+    void init_mutex();
     void releaseFile(int type); //1->friendFile, 2->ChatFile
-
-    int getNumberOfFriends(std::string &);
-
     //deconectam de la threadul respectiv clientul
     //returneaza referinta, in caz ca vrem sa folosim intr-o comanda inlantuita
     Server &disconnect (pthread_t);
@@ -144,11 +173,11 @@ public:
     //se modifica, constant
     std::list <ConnectedClientData> getClientThreadDataInstant () const;
 
-    Socket getClientSocket(pthread_t) const;
-
     void writeToConnectedClientData(std::string,common::privacySetting, pthread_t);
 
     Server &setup (short, int = Server ::DEFAULT_QUEUE_SIZE);
+
+    void initSocket(short, int);
 
     void run();
 

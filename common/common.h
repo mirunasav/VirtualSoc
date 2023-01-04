@@ -8,6 +8,7 @@
 #include <string>
 #include <cstring>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 
 #define BUFFER_LENGTH 256
@@ -23,12 +24,11 @@ namespace common {
 
         REQUEST_SIGN_UP  = 305,
 
-        //refresh la lista de useri
-        REQUEST_REFRESH_USERS = 310,
+        REQUEST_LOAD_FEED = 310,
 
-        REQUEST_GET_CHAT = 315,
+        REQUEST_LOAD_FEED_NOT_LOGGED_IN = 315,
 
-        REQUEST_WRITE_MESSAGE = 320,
+        REQUEST_REMOVE_POST= 320,
 
         REQUEST_NEW_POST = 330,
 
@@ -63,6 +63,8 @@ namespace common {
     enum ServerResponse : int{
         LOGIN_SUCCESS = 200,
 
+        LOGIN_ADMIN_SUCCESS = 300,
+
         LOGIN_BAD_USER_PASS = 400,
 
         LOGIN_USER_ALREADY_CONNECTED = 401,
@@ -83,10 +85,6 @@ namespace common {
 
         PRIVACY_TYPE_PRIVATE = 411,
 
-        USER_HAS_NO_CHATS = 412 , //si o sa scriem "you have no chats yet"? sau cu number of chats?
-
-        //cand apesi pe login desi nu esti logat
-        ACCES_DENIED_NOT_LOGGED_IN = 404
     };
 
     enum typesOfFile : int
@@ -94,6 +92,7 @@ namespace common {
         friendFile = 1,
         chatFile = 2,
         allChatsFile = 3,
+        allPostsJson = 4
     };
 
     enum typesOfFriend : int
@@ -105,7 +104,8 @@ namespace common {
     enum privacySetting : int
     {
         PUBLIC = 0, //!isPrivate
-        PRIVATE = 1 //isPrivate
+        PRIVATE = 1, //isPrivate
+        ADMIN = 2
     };
 
     enum openMode : int
@@ -126,10 +126,8 @@ namespace common {
     ServerResponse readResponse (Socket socket);
     std::string readString(Socket socket );
 
-    void readBuffer(int fd, void * pBuf);
     int readBufferInt(int fd, int & pBuf);
 
-    void writeBuffer(int fd,  char * pBuf);
     void writeRequestNumber(Socket socket, int requestNumber);
     void writeRequest ( Socket socket, ClientRequests request);
     void writeString (Socket socket, const std::string &message);
@@ -138,6 +136,39 @@ namespace common {
     std::vector<std::string> tokenizeString(std::string, const char * );
     std::string vectorToString (  std::vector<std::string>, const char *);
 
+    class Post
+    {
+    private:
+        std::string userWhoPosts;
+        std::string textOfPost;
+        std::string visibleToWhom;
+        std::string dateOfPost;
+        int ID;
+    public:
+        Post(std::string  userWhoPosts,std::string  textOfPost,std::string  visibleToWhom,std::string  dateOfPost, int ID)
+        : userWhoPosts(std::move(userWhoPosts)), textOfPost(std::move(textOfPost)), visibleToWhom(std::move(visibleToWhom)), dateOfPost(std::move(dateOfPost)), ID(ID)
+        {}
+        const std::string & getUserWhoPosts()
+        {
+            return this->userWhoPosts;
+        };
+        const std::string & getTextOfPost()
+        {
+            return this->textOfPost;
+        };
+        const std::string & getVisibleToWhom()
+        {
+            return this->visibleToWhom;
+        };
+        const std::string & getDateOfPost()
+        {
+            return this->dateOfPost;
+        };
+        const int & getID()
+        {
+            return this->ID;
+        }
+    };
     };
 
 

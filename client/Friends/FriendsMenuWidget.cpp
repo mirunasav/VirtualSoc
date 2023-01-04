@@ -6,6 +6,7 @@
 #include "FriendsMenuWidget.h"
 #include "AddFriendsWidget.h"
 #include "FriendsList.h"
+#include "../MainWindow.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
         QWidget(pParentWindow ){
@@ -40,14 +41,12 @@ void FriendsMenuWidget::createComponents() {
     this->pButtonsLayout = new QVBoxLayout();
 
     this->pAddFriendsButton = new QPushButton(FriendsMenuWidget::pAddFriendsButtonText, this);
-    this->pFriendRequestsButton = new QPushButton(FriendsMenuWidget::pFriendRequestsButtonText, this);
     this->pMyFriendsButton = new QPushButton(FriendsMenuWidget::pMyFriendsButtonText, this);
 }
 
 void FriendsMenuWidget::settleLayouts() {
     this->setLayout(this->pMainLayout);
     this->pButtonsWidget->setLayout(this->pButtonsLayout);
-    //this->pChangeableWidget->setLayout(this->pChangeableLayout);
 
     this->pMainLayout ->addWidget(this->pHorizontalSplitter);
     this->pMainLayout ->addWidget(this->pVerticalSplitter);
@@ -61,13 +60,8 @@ void FriendsMenuWidget::settleLayouts() {
 
     this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
     this->pButtonsLayout ->addWidget(this->pAddFriendsButton);
-    this->pButtonsLayout ->addWidget(this->pFriendRequestsButton);
 
-
-
-
-
-
+    this->pButtonsLayout->setContentsMargins( 0, MainWindow::HEIGHT/3,0,MainWindow::HEIGHT/2.5);
 }
 
 void FriendsMenuWidget::styleComponents() {
@@ -87,10 +81,6 @@ void FriendsMenuWidget::swapWidgetsAddFriends() {
 
     pOldWidget->hide();
     delete pOldWidget;
-}
-
-void FriendsMenuWidget::swapWidgetsFriendRequests() {
-
 }
 
 void FriendsMenuWidget::swapWidgetsFriendList() {

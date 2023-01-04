@@ -31,7 +31,7 @@ public:
 
     void main();//mainul threadului
 
-    //treat requests o sa le fac intr un request handler mai incolo;
+    void disconnectThread() const;
 
     Socket clientSocket;
     //id ul threadului alocat

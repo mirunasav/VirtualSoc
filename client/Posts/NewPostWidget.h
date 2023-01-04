@@ -20,17 +20,20 @@ private:
     QPushButton *pPostButton {nullptr};
     QTextEdit *pTextEdit {nullptr};
     //asta apare doar daca e contul privat
-    QComboBox *pPostToWhichGroup {nullptr};
+    QComboBox *pVisibleToWhomComboBox {nullptr};
 
+
+    std::string textOfPost;
+    std::string visibleToWhom;
     bool isPrivateVariable;
 private slots:
-    void changePostVisibility(const std::string &);
-
+    void onPostClick();
 signals:
-    void onPostClick(const std::string &, const std::string &); //postare, vizibilitate
+     //postare, vizibilitate
     //dau clear si la textbox tot aici
 public:
     constexpr static const char *pPostButtonText = "Post";
+    constexpr static const char *pAfterPostingMessage = "Your post has been shared!";
 
     explicit NewPostWidget(QWidget *) ;
 
@@ -41,6 +44,9 @@ public:
     void settleLayouts();
 
     bool isPrivate();
+
+    void notificationPopUp(const char * message);
+
     ~NewPostWidget() override = default;
 };
 

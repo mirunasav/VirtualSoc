@@ -14,10 +14,6 @@ ClientThread ::ClientThread(pthread_t threadID, Socket clientSocket) :
 
 }
 
-void ClientThread::acquireSocketFromServer() {
-    this->clientSocket = Server::getInstance().getClientSocket( this->ID );
-}
-
 //in run :
 //while : astept un request, il pasez la requestHandler;
 void ClientThread::main() {
@@ -27,10 +23,13 @@ void ClientThread::main() {
     int status_code = 0;
     while(status_code != 499)
     {
-        //punem intr-un bloc de try si vom arunca exceptii in cas ca apar erori la read/write sau la conexiune
-        //status_code = this->treatRequest(common::readRequest(this->clientSocket));
-        status_code = RequestHandler::handleRequest(* this, common::readRequest(this->clientSocket));
+            status_code = RequestHandler::handleRequest(* this, common::readRequest(this->clientSocket));
+        //pot pune intr-un bloc de try si vom arunca exceptii in cas ca apar erori la read/write sau la conexiune
 
     }
+    this->disconnectThread();
+}
+
+void ClientThread::disconnectThread() const {
     Server::getInstance().disconnect(this->ID);
 }

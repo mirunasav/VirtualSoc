@@ -21,11 +21,11 @@ add_executable(client client/MainWindow.cpp
         client/AppHomeWidget.h
         client/LoginWidget.cpp
         client/LoginWidget.h
-        client/FeedWidget.cpp
-        client/FeedWidget.h
+        client/Posts/FeedWidget.cpp
+        client/Posts/FeedWidget.h
         client/ActionsWidget.cpp
         client/ActionsWidget.h
-        NotLoggedIn.cpp NotLoggedIn.h
+        client/NotNormalUser.cpp client/NotNormalUser.h
        common/common.cpp common/common.h
         client/ServerConnection.cpp
         client/ServerConnection.h
@@ -51,7 +51,7 @@ add_executable(client client/MainWindow.cpp
         client/Messenger/ChatWidget.h
         client/Messenger/AllMessagesWidget.cpp
         client/Messenger/AllMessagesWidget.h
-        client/NewPostWidget.cpp client/NewPostWidget.h)
+        client/Posts/NewPostWidget.cpp client/Posts/NewPostWidget.h client/Posts/PostWidget.cpp client/Posts/PostWidget.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

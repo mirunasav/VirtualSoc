@@ -7,7 +7,7 @@
 #include "MainWindow.h"
 #include <QWidget>
 #include <QSplitter>
-#include "FeedWidget.h"
+#include "Posts/FeedWidget.h"
 class AppHomeWidget : public QWidget{
 Q_OBJECT
 private slots:

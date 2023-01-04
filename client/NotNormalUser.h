@@ -2,8 +2,8 @@
 // Created by mrnk on 12/4/22.
 //
 
-#ifndef QT1_NOTLOGGEDIN_H
-#define QT1_NOTLOGGEDIN_H
+#ifndef QT1_NOTNORMALUSER_H
+#define QT1_NOTNORMALUSER_H
 
 #include <QWidget>
 #include <QSplitter>
@@ -11,13 +11,16 @@
 
 //similat cu appHome : am acelasi feed care apeleaza aceleasi functii ca sa vedem postarile
 //dar in stanga am alte optiuni
-class NotLoggedIn : public  QWidget{
+class NotNormalUser : public  QWidget{
 Q_OBJECT
 private slots:
     void swapWidgetsReturn();
+    void swapWidgetsRefreshFeed();
     void onReturn();
+    void onRefresh();
 signals:
     void returned();
+    void refreshed();
 private:
     QWidget * pCentralWidget {nullptr};
 
@@ -28,12 +31,16 @@ private:
     QWidget *pButtonWidget {nullptr};
     QWidget *pFeedWidget {nullptr};
     QPushButton *pReturnToStartPage {nullptr};
+    QPushButton *pRefreshFeedButton {nullptr};
 
     QSplitter *pSplitter {nullptr};
+
+    bool isAdmin {false};
 public:
     constexpr static const char *pReturnButtonText = "Return";
+    constexpr static const char *pRefreshFeedButtonText = "Refresh Feed";
 
-    explicit NotLoggedIn(QWidget *pParentWindow);
+    explicit NotNormalUser(QWidget *pParentWindow, bool);
 
     void initWidget();
 
@@ -43,8 +50,8 @@ public:
 
     void styleComponents();
 
-    ~NotLoggedIn() override = default;
+    ~NotNormalUser() override = default;
 };
 
 
-#endif //QT1_NOTLOGGEDIN_H
+#endif //QT1_NOTNORMALUSER_H

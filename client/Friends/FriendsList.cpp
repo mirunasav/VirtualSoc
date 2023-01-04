@@ -14,6 +14,7 @@ using namespace common;
 class write;
 
 FriendsList::FriendsList(QWidget *pParentWidget) : QWidget(pParentWidget){
+    this->numberOfFriendsCounter = 0;
     this->initWidget();
 }
 
@@ -126,7 +127,7 @@ void FriendsList::clearFriendList() {
     }
 }
 
-int FriendsList::refreshNumberOfFriendsCounter() {
+void FriendsList::refreshNumberOfFriendsCounter() {
     common::writeRequest(ServerConnection::getInstance().getSocket(),ClientRequests::REQUEST_GET_NUMBER_OF_FRIENDS);
     common::readBufferInt(ServerConnection::getInstance().getSocket(), this->numberOfFriendsCounter);
 }
@@ -145,11 +146,5 @@ void FriendsList::changeFriendshipType(const std::string & username, const std::
     common::writeString(ServerConnection::getInstance().getSocket(), newFriendshipType);
 
 
-   // this->restartTimer();
 }
-//
-//void FriendsList::restartTimer() {
-//    this->pRefreshListTimer->setInterval(1500);
-//    this->pRefreshListTimer->start();
-//}
 

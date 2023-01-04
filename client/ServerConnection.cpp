@@ -6,7 +6,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "../common/common.h"
 
 ServerConnection ServerConnection::instance;
 
@@ -31,9 +30,9 @@ bool ServerConnection :: connect (const char * pAddress, short port)
                        sizeof ( sockaddr_in )))
         return false;
 
-    this->connected = true;
+   this->markAsConnected();
 
-    return true;
+   return true;
 }
 
 bool ServerConnection::disconnect() {
@@ -43,4 +42,9 @@ bool ServerConnection::disconnect() {
     close(this->clientSocket);
     this->connected = false;
     this->clientSocket = INVALID_SOCKET;
+    return true;
+}
+
+void ServerConnection::markAsConnected() {
+    this->connected = true;
 }

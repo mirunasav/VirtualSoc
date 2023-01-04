@@ -4,9 +4,11 @@
 
 #include "MainWindow.h"
 #include <QMainWindow>
+#include <QMessageBox>
 #include "LoginWidget.h"
 #include "AppHomeWidget.h"
-#include "../NotLoggedIn.h"
+#include "NotNormalUser.h"
+#include "ServerConnection.h"
 
 uint MainWindow::WIDTH = 1280;
 uint MainWindow::HEIGHT = 720;
@@ -64,10 +66,18 @@ void MainWindow ::swapWidgetsUserDisconnect() {
 
 }
 
-
 void MainWindow::swapWidgetsSkip() {
     QWidget* pOldWidget = this->pCentralWidget; //retin widgetul activ
-    this->pCentralWidget = new NotLoggedIn(this);//setez un home widget ca activ
+
+    ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
+
+    if(!ServerConnection::getInstance().isConnected()) //nu a mers conexiunea
+    {
+        this->notificationPopUp(LoginWidget::pServerDown);
+        return;
+    }
+
+    this->pCentralWidget = new NotNormalUser(this,false);//setez un home widget ca activ
 
     //in loc de setCentralWidget
 //    this->pLayout = new QVBoxLayout();
@@ -79,10 +89,30 @@ void MainWindow::swapWidgetsSkip() {
     delete pOldWidget;
 }
 
+void MainWindow::notificationPopUp(const char *message) {
+    //apare un text box pop up; parintele este this
+    //titlul este ..., mesajul este message, un buton de ok
+    QMessageBox::information(this, " ", message,QMessageBox::Ok);
+
+}
 
 MainWindow :: ~MainWindow () {
     //poate mai modific ceva in fisierele serverului aici idk vedem
 
+}
+
+void MainWindow::swapWidgetsAdmin() {
+    QWidget* pOldWidget = this->pCentralWidget; //retin widgetul activ
+    this->pCentralWidget = new NotNormalUser(this,true);//setez un home widget ca activ
+
+    //in loc de setCentralWidget
+//    this->pLayout = new QVBoxLayout();
+//    this->setLayout(pLayout);
+    this->pMainLayout->removeWidget(pOldWidget);
+    pMainLayout->addWidget(pCentralWidget);//activez widgetul
+
+    pOldWidget->hide();
+    delete pOldWidget;
 }
 
 

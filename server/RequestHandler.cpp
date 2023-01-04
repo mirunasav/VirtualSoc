@@ -5,6 +5,7 @@
 #include "RequestHandler.h"
 #include "../common/common.h"
 #include "Server.h"
+
 int RequestHandler::handleRequest( ClientThread  & client,  common::ClientRequests request) {
     //map de la enum la functie in loc de request
     //map : ClientRequest - std::function
@@ -56,6 +57,18 @@ int RequestHandler::handleRequest( ClientThread  & client,  common::ClientReques
         case common::REQUEST_CHANGE_PRIVACY_TYPE_PUBLIC:
             RequestHandler::handleChangePrivacyType(client,common::privacySetting::PUBLIC);
             return 200;
+        case common::REQUEST_NEW_POST:
+            RequestHandler::handleAddNewPost(client);
+            return 200;
+        case common::REQUEST_LOAD_FEED:
+            RequestHandler::handleLoadFeed(client);
+            return 200;
+        case common::REQUEST_LOAD_FEED_NOT_LOGGED_IN:
+            RequestHandler::handleLoadFeedNotLoggedIn(client);
+            return 200;
+        case common::REQUEST_REMOVE_POST:
+            RequestHandler::handleRemovePost(client);
+            return 200;
 
             //cand se inchide clientul din x / neasteptat, nu din butonul de logout
         case common::NO_REQUEST :
@@ -84,9 +97,19 @@ void RequestHandler::handleLogin(ClientThread &client) {
     //daca nu e conectat deja, verificam fisierul cu parole
     if(Server::getInstance().checkLogin(username, password, client.ID))
     {
-        client.loggedIn = true;
-        client.isPrivate = Server::getInstance().isPrivate(client.ID);
-        writeResponse(client.clientSocket, common::ServerResponse::LOGIN_SUCCESS);
+        if(Server::getInstance().isAdmin(client.ID))
+        {
+            client.loggedIn = true;
+            client.isPrivate = false;
+            writeResponse(client.clientSocket, common::ServerResponse::LOGIN_ADMIN_SUCCESS);
+        }
+        else
+        {
+            client.loggedIn = true;
+            client.isPrivate = Server::getInstance().isPrivate(client.ID);
+            writeResponse(client.clientSocket, common::ServerResponse::LOGIN_SUCCESS);
+        }
+
     }
     else
         writeResponse(client.clientSocket, common::ServerResponse::LOGIN_BAD_USER_PASS);
@@ -266,5 +289,73 @@ void RequestHandler::handleNoRequest(ClientThread &client) {
 
 std::string RequestHandler::getClientUsername(ClientThread &client) {
     return Server::getInstance().getUsername(client.ID);
+}
+
+void RequestHandler::handleAddNewPost(ClientThread &client) {
+
+    std::string textOfPost = common ::readString(client.clientSocket);
+    std::string visibleToWhom = common ::readString(client.clientSocket);
+    std::string date = common::readString(client.clientSocket);
+
+    auto requesterUsername = RequestHandler::getClientUsername(client);
+    Server::getInstance().addPost(requesterUsername, textOfPost, visibleToWhom, date);
+}
+
+void RequestHandler::handleLoadFeed(ClientThread &client) {
+    auto requesterUsername = RequestHandler::getClientUsername(client);
+
+    std::vector <common::Post> vectorOfPosts ;
+    vectorOfPosts = Server::getInstance().getAllPosts(requesterUsername);
+
+    int numberOfPosts = vectorOfPosts.size();
+    std::string isOwnerOfPost ; //cv la modul, daca
+    //pe feedul lui user1 apare o postare de la user 1, apare si un buton
+    //care ii permite sa o stearga
+
+    common::writeRequestNumber(client.clientSocket, numberOfPosts);
+    bool isAdmin = Server::getInstance().isAdmin(client.ID);
+    for (auto begin = vectorOfPosts.rbegin(); begin!=vectorOfPosts.rend(); ++begin)
+    {
+        auto& post = * begin;
+        if(post.getUserWhoPosts() == requesterUsername || isAdmin )
+            isOwnerOfPost = "true";
+        else
+            isOwnerOfPost = "false";
+        common::writeString(client.clientSocket, isOwnerOfPost);
+        common::writeString(client.clientSocket, post.getUserWhoPosts());
+        common::writeString(client.clientSocket, post.getTextOfPost());
+        common::writeString(client.clientSocket, post.getVisibleToWhom());
+        common::writeString(client.clientSocket, post.getDateOfPost());
+        common::writeString(client.clientSocket, std::to_string(post.getID()));
+
+    }
+
+}
+
+void RequestHandler::handleLoadFeedNotLoggedIn(ClientThread &client) {
+    std::vector <common::Post> vectorOfPosts ;
+    vectorOfPosts = Server::getInstance().getAllPostsNotLoggedIn();
+
+    int numberOfPosts = vectorOfPosts.size();
+    common::writeRequestNumber(client.clientSocket, numberOfPosts);
+    std::string isOwnerOfPost  = "false";
+    for (auto begin = vectorOfPosts.rbegin(); begin!=vectorOfPosts.rend(); ++begin)
+    {
+        auto& post = * begin;
+        common::writeString(client.clientSocket, isOwnerOfPost);
+        common::writeString(client.clientSocket, post.getUserWhoPosts());
+        common::writeString(client.clientSocket, post.getTextOfPost());
+        common::writeString(client.clientSocket, post.getVisibleToWhom());
+        common::writeString(client.clientSocket, post.getDateOfPost());
+        common::writeString(client.clientSocket, std::to_string(post.getID()));
+    }
+
+}
+
+void RequestHandler::handleRemovePost(ClientThread &client) {
+    int postID = 0;
+    common::readBufferInt(client.clientSocket, postID);
+
+    Server::getInstance().removePost(postID);
 }
 

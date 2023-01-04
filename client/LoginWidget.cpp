@@ -108,6 +108,8 @@ void LoginWidget::connectComponents() {
         this->onSkip();
     });
     connect(this, SIGNAL(notLoggedIn()), this->parent(), SLOT(swapWidgetsSkip()));
+
+    connect(this, SIGNAL(loginAdminSuccess()), this->parent(), SLOT(swapWidgetsAdmin()));
 }
 
 
@@ -146,6 +148,9 @@ void LoginWidget::onConfirmLogin() {
             break;
         case ServerResponse:: LOGIN_USER_ALREADY_CONNECTED:
             this->notificationPopUp(LoginWidget :: pMessageUserAlreadyConnected);
+            break;
+        case ServerResponse::LOGIN_ADMIN_SUCCESS:
+            emit this->loginAdminSuccess();
             break;
         default:
             emit this->loginSuccess();

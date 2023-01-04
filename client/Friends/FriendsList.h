@@ -40,7 +40,7 @@ private slots:
     void refreshFriendList(); //->asta genereaza schimbare in lista din server
     void acquireFriendList();//asta ia lista de la server
     void removeFriend(const std::string &);
-    void changeFriendshipType(const std::string &, const std::string &);
+    static void changeFriendshipType(const std::string &, const std::string &);
 
 public:
     constexpr static const char *pNumberOfFriendsText= "Number of Friends:";
@@ -57,9 +57,7 @@ public:
 
     void clearFriendList();
 
-    void restartTimer();
-
-    int refreshNumberOfFriendsCounter();
+    void refreshNumberOfFriendsCounter();
 
     ~FriendsList() override = default;
 

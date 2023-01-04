@@ -24,12 +24,6 @@ void common:: writeRequestNumber(Socket socket, int requestNumber)
         throwException(errors::writeRequestNumberError);
 }
 
-void common::writeBuffer(int fd,  char * pBuf){
-    int bufLen = strlen(pBuf);
-    write(fd, & bufLen, 4);
-    write(fd, pBuf, bufLen);
-}
-
 void common::writeString (Socket socket, const std::string &message)
 {
     //trimitem lungimea, urmata de string
@@ -69,14 +63,6 @@ int common::readBufferInt(int fd, int  &pBuf){
     int retVal = read(fd, &pBuf, sizeof(int) );
     return retVal;
 
-}
-
- void  common::readBuffer(int fd, void * pBuf){
-
-    memset(pBuf, 0, BUFFER_LENGTH);
-    int bufLen;
-    int retVal = read(fd, & bufLen, 4);
-    read(fd, pBuf, bufLen);
 }
 
 std::string common:: readString(Socket socket )

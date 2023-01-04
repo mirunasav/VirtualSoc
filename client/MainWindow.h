@@ -21,6 +21,7 @@ public slots:
     void swapWidgetsLoginSuccess();
     void swapWidgetsUserDisconnect();
     void swapWidgetsSkip();
+    void swapWidgetsAdmin();
 
 
 public:
@@ -38,6 +39,8 @@ private:
     QLayout * pMainLayout {nullptr};
     QWidget * pCentralWidget {nullptr};
 
+    void notificationPopUp(const char *message);
+    
     void initWindow(); //construieste fereastra si widgetul de la inceput
 };
 

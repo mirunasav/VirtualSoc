@@ -55,6 +55,7 @@ private:
 signals:
     //semnale pe care le trimit daca am pus userul si parola corecte;
     void loginSuccess();
+    void loginAdminSuccess();
     void notLoggedIn();
 
 

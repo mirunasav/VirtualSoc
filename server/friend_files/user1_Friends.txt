@@ -1,5 +1,4 @@
-user3 1
+user3 3
 user2 3
 u 1
-vlad 3
-none 1
+vlad 3user11

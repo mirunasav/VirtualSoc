@@ -111,7 +111,6 @@ onChangeTypeClick(int index) {
     switch(index)
     {
         case 0://Normal friend
-            this->pChangeFriendType->currentText() = "Normal Friend";
             emit changeType(this->pFriendUsername->text().toStdString(),std::to_string(common::typesOfFriend::NORMAL_FRIEND));
             break;
         case 1://Close Friend

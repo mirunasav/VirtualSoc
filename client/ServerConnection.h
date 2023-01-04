@@ -26,7 +26,7 @@ public:
     ServerConnection() = default;
     static ServerConnection &getInstance();
 
-    constexpr bool isConnected() const {
+    [[nodiscard]] constexpr bool isConnected() const {
         return this->connected;
     }
 
@@ -36,10 +36,11 @@ public:
 
     bool disconnect();
 
-    constexpr Socket getSocket() const
+    [[nodiscard]] constexpr Socket getSocket() const
     {
         return this->clientSocket;
     }
+    void markAsConnected();
 };
 
 

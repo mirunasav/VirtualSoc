@@ -9,6 +9,7 @@
 #include "ChatWidget.h"
 #include "../../common/common.h"
 #include "../MainWindow.h"
+#include <QKeyEvent>
 
 ChatWidget::ChatWidget(QWidget *pParent, std::string &usernamesInChat) :
         QWidget(pParent){
@@ -138,4 +139,12 @@ void ChatWidget::sendMessage() {
         ServerConnection::getInstance().connect(common::SERVER_IP, common::SERVER_PORT);
     }
 
+}
+
+void ChatWidget::keyPressEvent(QKeyEvent *event) {
+
+    if( event ->key() == Qt::Key_Return || event ->key() == Qt::Key_Enter)
+    {
+        this->sendMessage();
+    }
 }

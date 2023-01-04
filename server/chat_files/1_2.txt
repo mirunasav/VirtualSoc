@@ -47,3 +47,5 @@ ce faci?
  < user1 >  yes
  < user1 >  alo
  < user1 >  hei
+ < user1 >  ok mesaj nou
+ < user1 >  ok mesaj cu enter

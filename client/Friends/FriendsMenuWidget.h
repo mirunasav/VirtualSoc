@@ -15,7 +15,6 @@ class FriendsMenuWidget : public QWidget {
 Q_OBJECT
 private slots:
     void swapWidgetsAddFriends();
-    void swapWidgetsFriendRequests();
     void swapWidgetsFriendList();
 private:
     QWidget *pChangeableWidget{nullptr};
@@ -28,19 +27,16 @@ private:
     QFont FriendsLabelFont{ QFont("Arial", 40, QFont::Bold)} ;
 
     QPushButton *pAddFriendsButton {nullptr};
-    QPushButton *pFriendRequestsButton {nullptr};
     QPushButton *pMyFriendsButton {nullptr};
 
     QSplitter *pHorizontalSplitter {nullptr};//intre butoane si lista prieteni
     QSplitter *pVerticalSplitter {nullptr};//intre label si partea de jos
 public:
     constexpr static const char *pFriendsListLabelText = "My Friends";
-    constexpr static const char *pFriendRequestsLabelText = "Friend Requests";
     constexpr static const char *pFriendsAddFriendsLabelText = "Add Friends";
 
     constexpr static const char *pMyFriendsButtonText = "My Friends";
     constexpr static const char *pAddFriendsButtonText = "Add Friends";
-    constexpr static const char *pFriendRequestsButtonText = "Friend Requests";
 
 
     explicit FriendsMenuWidget(QWidget *pParentWindow);

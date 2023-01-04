@@ -10,9 +10,14 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-
+#include <sstream>
+#include <CDS/util/JSON>
+#include <CDS/filesystem/Path>
+#include <utility>
+#include <vector>
 #include "ClientThread.h"
-
+#include "../common/errors.h"
+using namespace cds::json;
 constexpr Socket INVALID_SOCKET =  (Socket) SOCKET_ERROR;
 
 Server Server::instance;
@@ -32,6 +37,7 @@ static pthread_mutex_t  chatFileLock; //cand scriem/citim intr-un chat file
 static pthread_mutex_t  allChatsFileLock; //cand scriem/citim intr-un chat file
 static pthread_mutex_t  feedFileLock;
 static pthread_mutex_t  friendsFileLock;
+static pthread_mutex_t  allPostsFileLock;
 //banuiesc ca o sa mai tb unul pt feed, pt cand scriem/citim din feed file?
 
 //creez un socket nou
@@ -42,7 +48,7 @@ auto Server:: newSocket()
     s = socket(AF_INET, SOCK_STREAM, PF_UNSPEC);
 
     if(s == INVALID_SOCKET)
-        throw std::runtime_error("Failure at socket initialization!\n");
+       errors::throwException(errors::errorAtSocketInitialization);
     return s;
 }
 
@@ -50,8 +56,7 @@ auto Server::reuseAddress(Socket s) {
     int toggle = 1;
 
     if( -1 == setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &toggle, sizeof(int)))
-        throw std::runtime_error ("Set reusable address error!\n");
-
+        errors::throwException(errors::errorAtSettingReusableAddress);
     return s;
 }
 
@@ -66,7 +71,7 @@ auto Server::bindSocket(Socket s, short port) {
             reinterpret_cast < sockaddr * > ( & serverAddressInformation ),
             sizeof ( sockaddr_in )
     ) )
-        throw std::runtime_error ( "Bind error" );
+       errors::throwException(errors::errorAtBind);
     return s;
 }
 \
@@ -77,8 +82,7 @@ auto Server::bindSocket(Socket s, short port) {
 auto Server::listenSocket(Socket s, int queueSize) {
 
   if ( listen(s, queueSize ) == -1 ) //avem eroare
-      throw std::runtime_error("Error at listen!\n");
-
+      errors::throwException(errors::errorAtListen);
   return s;
 }
 
@@ -91,14 +95,24 @@ auto Server::listenSocket(Socket s, int queueSize) {
 //initializam lacatele
 
 
-Server &Server::setup(short port, int queueSize) {
-    this->serverSocket = listenSocket(bindSocket(reuseAddress(newSocket()),port),queueSize);
+void Server::init_mutex() {
     pthread_mutex_init ( & threadListLock, nullptr );
     pthread_mutex_init ( & usersFileLock, nullptr );
     pthread_mutex_init ( & chatFileLock, nullptr );
     pthread_mutex_init ( & feedFileLock, nullptr );
     pthread_mutex_init ( & allChatsFileLock, nullptr );
+    pthread_mutex_init ( & allPostsFileLock, nullptr );
+}
 
+void Server::initSocket(short port, int queueSize) {
+    this->serverSocket = listenSocket(bindSocket(reuseAddress(newSocket()),port),queueSize);
+}
+
+
+Server &Server::setup(short port, int queueSize) {
+   this->initSocket(port, queueSize);
+    //sa pun separat functie pt mutexuri
+    this->init_mutex();
     return *this;
 }
 
@@ -422,12 +436,15 @@ void Server::releaseFile(int type) {
             pthread_mutex_unlock(&allChatsFileLock);
             this->currentOpenAllChatsFile.close();
             return ;
+        case 4://allPostsJson
+            pthread_mutex_unlock(&allPostsFileLock);
+            this->currentOpenAllPostsJson.close();
+            return ;
     }
 }
 
 Server &Server::disconnect(pthread_t threadID) {
    this->logout(threadID);
-
 }
 
 //scoatem clientul din lista, dar nu inchidem socketul
@@ -467,15 +484,38 @@ bool Server::isPrivate(pthread_t ID) const {
 
            switch(clientData.privacy)
            {
-               case common::privacySetting::PUBLIC:
-                   pthread_mutex_unlock( & threadListLock );
-                   return false; //e public
-                   break;
                case common::privacySetting::PRIVATE:
                    pthread_mutex_unlock( & threadListLock );
                    return true;//e private
-                   break;
+               default:
+                   pthread_mutex_unlock( & threadListLock );
+                   return false; //e public
            }
+            break;
+        }
+
+    pthread_mutex_unlock( & threadListLock );
+
+}
+
+bool Server::isAdmin(pthread_t ID) const {
+    pthread_mutex_lock ( & threadListLock );
+
+
+    for ( const auto & clientData : this->clientList)
+        if ( clientData.threadID == ID ) { // cautam username-ul thread-ului cu ID-ul dat
+
+            switch(clientData.privacy)
+            {
+                case common::privacySetting::ADMIN:
+                    pthread_mutex_unlock( & threadListLock );
+                    return true;//e private
+                    break;
+                default:
+                    pthread_mutex_unlock( & threadListLock );
+                    return false; //e public
+                    break;
+            }
             break;
         }
 
@@ -613,7 +653,7 @@ std::fstream &Server::getAllChatsFile() {
     return this->currentOpenAllChatsFile;
 }
 
-void Server::changePrivacy(std::string username, common::privacySetting privacyType, pthread_t threadID) {
+void Server::changePrivacy(const std::string& username, common::privacySetting privacyType, pthread_t threadID) {
     //mai intai schimb in fisier si apoi in connected client data
     //in fisier:
     pthread_mutex_lock(&usersFileLock);
@@ -659,9 +699,114 @@ void Server::changePrivacy(std::string username, common::privacySetting privacyT
 
 }
 
+void Server::addPost(const std::string& username, const std::string& text, const std::string& visibleToWhom, const std::string& date) {
+    pthread_mutex_lock(&allPostsFileLock);
+    std::fstream jsonFile (Server::pPostsJSONPath);
+    std::stringstream buffer;
+    buffer<<jsonFile.rdbuf();
+    JsonObject db (buffer.str());
+
+    db.getArray("posts").pushBack(JsonObject().put("id",(int)db.size()+1).put("from", username.c_str())
+    .put("text", text.c_str())
+    .put("visibleTo", visibleToWhom.c_str())
+    .put("date", date.c_str()));
+
+    jsonFile.close();
+    jsonFile.open(Server::pPostsJSONPath, std::ios::trunc | std::ios::out);
+    jsonFile<<dump(db)<<'\n';
+    pthread_mutex_unlock(&allPostsFileLock);
+    jsonFile.close();
+}
+
+std::vector <common::Post> Server::getAllPosts(std::string & username) {
+    pthread_mutex_lock(&allPostsFileLock);
+    auto db = cds::json::loadJson ( Server::pPostsJSONPath );
+
+    auto &posts = db.getArray("posts");
+    std::vector <common::Post> vectorOfPosts;
+    for (auto & post : posts)
+    {
+        if (post.getJson().getString("visibleTo") == "0"|| //daca e postare publica
+            post.getJson().getString("from") == username ||
+            userInGroupTarget(post.getJson().getString("from"), username,post.getJson().getString("visibleTo")))
+
+        {
+            vectorOfPosts.emplace_back(post.getJson().getString("from"), post.getJson().getString("text"),
+                                    post.getJson().getString("visibleTo"), post.getJson().getString("date"),
+                                                 post.getJson().getInt("id"));
+        }
+
+    }
+    pthread_mutex_unlock(&allPostsFileLock);
+    return vectorOfPosts;
+}
+
+bool Server::userInGroupTarget(std::string userWhoPosts, const std::string& userWhoSees, const std::string& friendshipType) {
+    pthread_mutex_lock(&friendsFileLock);
+
+    std::fstream userWhoPostsFriendFile;
+
+    auto friendFileName =this->createFriendListFileName(userWhoPosts);
+    userWhoPostsFriendFile.open (friendFileName, std::fstream::in);
+    std::string usernameFromFile, typeFromFile;
+
+    while(userWhoPostsFriendFile>>usernameFromFile>> typeFromFile)
+    {
+        if(usernameFromFile == userWhoSees && typeFromFile == friendshipType)
+        {
+            pthread_mutex_unlock(&friendsFileLock);
+            userWhoPostsFriendFile.close();
+            return true;
+        }
+
+    }
+    pthread_mutex_unlock(&friendsFileLock);
+    userWhoPostsFriendFile.close();
+    return false;
+}
+
+std::vector<common::Post> Server::getAllPostsNotLoggedIn() {
+    pthread_mutex_lock(&allPostsFileLock);
+    auto db = cds::json::loadJson ( Server::pPostsJSONPath );
+
+    auto &posts = db.getArray("posts");
+    std::vector <common::Post> vectorOfPosts;
+    for (auto & post : posts)
+    {
+        if (post.getJson().getString("visibleTo") == "0")
+
+        {
+            vectorOfPosts.emplace_back(post.getJson().getString("from"), post.getJson().getString("text"),
+                                                 post.getJson().getString("visibleTo"), post.getJson().getString("date"),
+                                                 post.getJson().getInt("id"));
+        }
+
+    }
+    pthread_mutex_unlock(&allPostsFileLock);
+    return vectorOfPosts;
+}
+
+void Server::removePost(int postID) {
+    pthread_mutex_lock(&allPostsFileLock);
+
+    std::fstream jsonFile (Server::pPostsJSONPath);
+    std::stringstream buffer;
+    buffer<<jsonFile.rdbuf();
+    JsonObject db (buffer.str());
+
+    int lookFor = postID;
+    db.getArray("posts").removeFirstThat ([lookFor](auto & node){
+        return node.getJson().getInt ("id") == lookFor;
+    });
+
+    jsonFile.close();
+    jsonFile.open(Server::pPostsJSONPath, std::ios::trunc | std::ios::out);
+    jsonFile<<dump(db)<<'\n';
+    pthread_mutex_unlock(&allPostsFileLock);
+    jsonFile.close();
+
+}
 
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {
     return this->threadID == other.threadID;
 }
-
-
