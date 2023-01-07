@@ -16,6 +16,7 @@ Q_OBJECT
 private slots:
     void swapWidgetsAddFriends();
     void swapWidgetsFriendList();
+    void swapWidgetsFriendRequests();
 private:
     QWidget *pChangeableWidget{nullptr};
     QWidget *pButtonsWidget {nullptr};
@@ -28,6 +29,7 @@ private:
 
     QPushButton *pAddFriendsButton {nullptr};
     QPushButton *pMyFriendsButton {nullptr};
+    QPushButton *pFriendRequestsButton {nullptr};
 
     QSplitter *pHorizontalSplitter {nullptr};//intre butoane si lista prieteni
     QSplitter *pVerticalSplitter {nullptr};//intre label si partea de jos
@@ -37,6 +39,7 @@ public:
 
     constexpr static const char *pMyFriendsButtonText = "My Friends";
     constexpr static const char *pAddFriendsButtonText = "Add Friends";
+    constexpr static const char *pFriendRequestsButtonText= "Friend Requests";
 
 
     explicit FriendsMenuWidget(QWidget *pParentWindow);

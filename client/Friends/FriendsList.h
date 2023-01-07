@@ -31,7 +31,6 @@ private:
 //remove friend
     QListWidget *pFriends {nullptr};
 
-    QTimer *pRefreshListTimer {nullptr};
 private slots:
     //daca dau remove unui prieten tb sa dau refresh
     //la fel, dac schimb tipul de prietenie dau refresh

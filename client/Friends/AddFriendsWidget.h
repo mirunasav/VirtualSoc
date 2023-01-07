@@ -35,6 +35,7 @@ public:
     constexpr static const char *pInvalidUserText= "Error! Username Invalid";
     constexpr static const char *pOwnUsername= "Error! You cannot enter your own username!";
     constexpr static const char *pUserAlreadyFriend= "Error! Username already in your friend List";
+    constexpr static const char *pRequestAlreadySent= "Error! You already sent a friend request to this username";
     constexpr static const char *pRequestSentText= "Your Friend Request Has Been Sent!";
 
     explicit AddFriendsWidget (QWidget *pParentWindow);
@@ -46,6 +47,9 @@ public:
     void settleLayouts();
 
     void notificationPopUp(const char * message);
+
+    void keyPressEvent(QKeyEvent * event) override;
+
     ~AddFriendsWidget() override = default;
 
 signals:

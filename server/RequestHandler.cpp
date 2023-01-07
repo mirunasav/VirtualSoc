@@ -30,11 +30,23 @@ int RequestHandler::handleRequest( ClientThread  & client,  common::ClientReques
         case common::ClientRequests::REQUEST_GET_FRIEND_LIST:
             RequestHandler::handleGetFriendList(client);
             return 200;
+        case common::ClientRequests::REQUEST_GET_REQUESTS_LIST:
+            RequestHandler::handleGetFriendRequestsList(client);
+            return 200;
         case common::REQUEST_GET_NUMBER_OF_FRIENDS:
             RequestHandler::handleGetNumberOfFriends(client);
             return 200;
         case common::REQUEST_REMOVE_FRIEND:
             RequestHandler::handleRemoveFriend(client);
+            return 200;
+        case common::REQUEST_SEND_FRIEND_REQUEST:
+            RequestHandler::handleSendFriendRequest(client);
+            return 200;
+        case common::REQUEST_ACCEPT_REQUEST:
+            RequestHandler::handleAcceptRequest(client);
+            return 200;
+        case common::REQUEST_DENY_REQUEST:
+            RequestHandler::handleDenyRequest(client);
             return 200;
         case common::REQUEST_CHANGE_TYPE:
             RequestHandler::handleChangeFriendshipType(client);
@@ -136,27 +148,9 @@ void RequestHandler::handleLogout(ClientThread &client) {
 
 void RequestHandler::handleAddFriends(ClientThread &client) {
     std::string username = common::readString(client.clientSocket);
+    auto requesterUsername = RequestHandler::getClientUsername(client);
+    Server::getInstance().addFriend(requesterUsername, username);
 
-    //daca usernameul introdus e chiar al celui care trimite cererea
-    for(const auto & connectedClientData : Server::getInstance().getClientThreadDataInstant())
-    {
-        if(!connectedClientData.username.empty() && connectedClientData.username==username && connectedClientData.threadID == client.ID){
-            writeResponse(client.clientSocket,common:: ServerResponse :: ADD_FRIENDS_OWN_USERNAME);
-            return;
-        }
-    }
-
-    if(Server::getInstance().checkUserExists(username)) {
-        auto requesterUsername =RequestHandler::getClientUsername(client);
-
-        if( Server::getInstance().addFriend(requesterUsername, username))
-            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_SENT);
-        else
-            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND);
-
-    }
-    else
-        writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_INVALID_USER);
 }
 
 void RequestHandler::handleGetFriendList(ClientThread &client) {
@@ -164,7 +158,7 @@ void RequestHandler::handleGetFriendList(ClientThread &client) {
 
     int numberOfFriends = Server::getInstance().getNumberOfFriends(requesterUsername);
 
-    std::fstream & friendsFile = Server::getInstance().getFriendListFile(requesterUsername);
+    std::fstream & friendsFile= Server::getInstance().getFriendListFile(requesterUsername);
     std::string username, friendshipType;
     for(int i = 1; i<= numberOfFriends; i++){
         friendsFile>>username>>friendshipType;
@@ -305,7 +299,11 @@ void RequestHandler::handleLoadFeed(ClientThread &client) {
     auto requesterUsername = RequestHandler::getClientUsername(client);
 
     std::vector <common::Post> vectorOfPosts ;
-    vectorOfPosts = Server::getInstance().getAllPosts(requesterUsername);
+    bool isAdmin = Server::getInstance().isAdmin(client.ID);
+    if(isAdmin)
+       vectorOfPosts = Server::getInstance().getAllPosts(requesterUsername, true);
+    else
+        vectorOfPosts = Server::getInstance().getAllPosts(requesterUsername, false);
 
     int numberOfPosts = vectorOfPosts.size();
     std::string isOwnerOfPost ; //cv la modul, daca
@@ -313,7 +311,7 @@ void RequestHandler::handleLoadFeed(ClientThread &client) {
     //care ii permite sa o stearga
 
     common::writeRequestNumber(client.clientSocket, numberOfPosts);
-    bool isAdmin = Server::getInstance().isAdmin(client.ID);
+
     for (auto begin = vectorOfPosts.rbegin(); begin!=vectorOfPosts.rend(); ++begin)
     {
         auto& post = * begin;
@@ -357,5 +355,77 @@ void RequestHandler::handleRemovePost(ClientThread &client) {
     common::readBufferInt(client.clientSocket, postID);
 
     Server::getInstance().removePost(postID);
+}
+
+void RequestHandler::handleSendFriendRequest(ClientThread &client) {
+    //scrie requestul in fisierul de requesturi
+    std::string username = common::readString(client.clientSocket);
+
+    //daca usernameul introdus e chiar al celui care trimite cererea
+    for(const auto & connectedClientData : Server::getInstance().getClientThreadDataInstant())
+    {
+        if(!connectedClientData.username.empty() && connectedClientData.username==username && connectedClientData.threadID == client.ID){
+            writeResponse(client.clientSocket,common:: ServerResponse :: ADD_FRIENDS_OWN_USERNAME);
+            return;
+        }
+    }
+
+    if(Server::getInstance().checkUserExists(username)) {
+        auto requesterUsername =RequestHandler::getClientUsername(client);
+
+        //daca e deja in lista de prieteni
+        if (Server::getInstance().isFriend(requesterUsername, username))
+        {
+            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND);
+            return;
+        }
+
+        if( Server::getInstance().addFriendRequest(requesterUsername, username))
+            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_SENT);
+        else
+            //daca am mai trimis deja request : nu facem harassment
+            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_ALREADY_SENT);
+
+    }
+    else
+        writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_INVALID_USER);
+}
+
+void RequestHandler::handleAcceptRequest(ClientThread &client) {
+    //adauga prietenul in prieteni -> face ca addfriends
+    //acceptrequest e de fapt handleAddFriend ish
+    //il adaug dar il si sterg din lista de requests
+    RequestHandler::handleAddFriends(client);
+
+}
+
+void RequestHandler::handleDenyRequest(ClientThread &client) {
+    //sterge requestul din fisierul de requesturi
+    auto requesterUsername =RequestHandler::getClientUsername(client);
+    std::string username = common::readString(client.clientSocket);
+    Server::getInstance().removeFriendRequest(requesterUsername,username);
+}
+
+void RequestHandler::handleGetFriendRequestsList(ClientThread &client) {
+    auto requesterUsername =RequestHandler::getClientUsername(client);//gasim usernameul celui care cere
+
+
+    std::fstream & requestsFile = Server::getInstance().getFriendRequestsFile(requesterUsername);
+    std::string username;
+    std::string fileLine;
+    std::list <std::string> friendRequests;
+    while(std::getline(requestsFile, fileLine))
+    {
+        friendRequests.push_back(fileLine);
+    }
+
+    int numberOfRequests = friendRequests.size();
+
+    common::writeRequestNumber(client.clientSocket, numberOfRequests);
+    for (auto request : friendRequests)
+    {
+        common::writeString(client.clientSocket, request);
+    }
+    Server::getInstance().releaseFile(common::typesOfFile::requestsFile);
 }
 

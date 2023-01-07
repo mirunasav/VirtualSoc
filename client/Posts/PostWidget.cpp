@@ -86,6 +86,7 @@ void PostWidget::settleLayouts() {
     this->pVisibilityLayout->addWidget(this->pVisibleToLabel);
 
     this->pMainLayout->setAlignment(Qt::AlignLeft);
+    this->pPostTextLabel->setWordWrap(true);
 }
 
 void PostWidget::onRemoveClick() {

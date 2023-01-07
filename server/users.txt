@@ -1,6 +1,6 @@
 user1 parola1 1
 user2 parola2 0
-user3 parola3 0
+user3 parola3 1
 user4 parola4 0
 u p 0
 user5 parola5 0

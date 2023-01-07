@@ -7,7 +7,8 @@
 #include "../ServerConnection.h"
 #include "../LogInInterface/MainWindow.h"
 #include "AddFriendsWidget.h"
-
+#include <QKeyEvent>
+#include <QKeyEvent>
 AddFriendsWidget::AddFriendsWidget(QWidget *pParentWindow) :
                 QWidget (pParentWindow) {
     this->initWidget();
@@ -69,7 +70,7 @@ void AddFriendsWidget::onSendRequest() {
     }
     std::string username = this->pUsernameLineEdit->text().toStdString();
 
-    common::writeRequest(ServerConnection::getInstance().getSocket(), common::ClientRequests::REQUEST_ADD_FRIEND);
+    common::writeRequest(ServerConnection::getInstance().getSocket(), common::ClientRequests::REQUEST_SEND_FRIEND_REQUEST);
     common::writeString(ServerConnection::getInstance().getSocket(),username);
 
     common::ServerResponse response = common ::readResponse(ServerConnection::getInstance().getSocket());
@@ -88,12 +89,23 @@ void AddFriendsWidget::onSendRequest() {
         case common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND:
             this->notificationPopUp(AddFriendsWidget::pUserAlreadyFriend);
             break;
+        case common::ServerResponse::ADD_FRIENDS_REQUEST_ALREADY_SENT:
+            this->notificationPopUp(AddFriendsWidget::pRequestAlreadySent);
+            break;
     }
+    this->pUsernameLineEdit->clear();
 }
 void AddFriendsWidget::notificationPopUp(const char *message) {
     //apare un text box pop up; parintele este this
     //titlul este ..., mesajul este message, un buton de ok
     QMessageBox::information(this, " ", message,QMessageBox::Ok);
 
+}
+
+void AddFriendsWidget::keyPressEvent(QKeyEvent *event) {
+    if( event ->key() == Qt::Key_Return || event ->key() == Qt::Key_Enter)
+    {
+        this->onSendRequest();
+    }
 }
 

@@ -7,6 +7,7 @@
 #include "AddFriendsWidget.h"
 #include "FriendsList.h"
 #include "../LogInInterface/MainWindow.h"
+#include "FriendRequestsWidget.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
         QWidget(pParentWindow ){
@@ -21,6 +22,7 @@ void FriendsMenuWidget::initWidget() {
 
     connect(this->pAddFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsAddFriends);
     connect(this->pMyFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsFriendList);
+    connect(this->pFriendRequestsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsFriendRequests);
 
 }
 
@@ -42,6 +44,7 @@ void FriendsMenuWidget::createComponents() {
 
     this->pAddFriendsButton = new QPushButton(FriendsMenuWidget::pAddFriendsButtonText, this);
     this->pMyFriendsButton = new QPushButton(FriendsMenuWidget::pMyFriendsButtonText, this);
+    this->pFriendRequestsButton = new QPushButton(FriendsMenuWidget::pFriendRequestsButtonText, this);
 }
 
 void FriendsMenuWidget::settleLayouts() {
@@ -60,6 +63,7 @@ void FriendsMenuWidget::settleLayouts() {
 
     this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
     this->pButtonsLayout ->addWidget(this->pAddFriendsButton);
+    this->pButtonsLayout ->addWidget(this->pFriendRequestsButton);
 
     this->pButtonsLayout->setContentsMargins( 0, MainWindow::HEIGHT/3,0,MainWindow::HEIGHT/2.5);
 }
@@ -90,9 +94,22 @@ void FriendsMenuWidget::swapWidgetsFriendList() {
 
     this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
 
+    this->pFriendsLabel->setText(FriendsMenuWidget::pFriendsListLabelText);
     pOldWidget->hide();
     delete pOldWidget;
 
+}
+
+void FriendsMenuWidget::swapWidgetsFriendRequests() {
+    QWidget *pOldWidget = this->pChangeableWidget;
+
+    this->pChangeableWidget = new FriendRequestsWidget(this);
+
+    this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
+    this->pFriendsLabel->setText(FriendsMenuWidget::pFriendRequestsButtonText);
+
+    pOldWidget->hide();
+    delete pOldWidget;
 }
 
 

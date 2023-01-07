@@ -54,7 +54,7 @@ public:
 
     std::string parseString(std::string );
 
-    void keyPressEvent(QKeyEvent * event) override;//cand apas enter fac login
+    void keyPressEvent(QKeyEvent * event) override;
 
     ~ChatWidget() override = default;
 };

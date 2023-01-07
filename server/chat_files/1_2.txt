@@ -49,3 +49,7 @@ ce faci?
  < user1 >  hei
  < user1 >  ok mesaj nou
  < user1 >  ok mesaj cu enter
+ < user1 >  hello
+ < user2 >  hello
+ < user1 >  wassup
+ < user2 >  nothing much

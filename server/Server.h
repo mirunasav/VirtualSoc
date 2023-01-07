@@ -48,6 +48,7 @@ private:
     //ci doar intern si sa-l dam mai departe cu getInstance();
     constexpr static const char * pUsersFile = "../server/users.txt";
     constexpr static const char * pFriendListFiles= "../server/friend_files";
+    constexpr static const char * pFriendRequestsFiles= "../server/request_files";
     constexpr static const char * pAllChatsFile= "../server/chat_files/all_chats.txt";
     constexpr static const char * pChatsPath= "../server/chat_files/";
     constexpr static const char * pPostsJSONPath= "../server/posts/all_posts.json";
@@ -62,9 +63,11 @@ private:
     Socket serverSocket {(Socket) SOCKET_ERROR}; //invalid socket
 
     std::fstream currentOpenFriendFile;
+    std::fstream currentOpenFriendRequestsFile;
     std::fstream currentOpenChatFile;
     std::fstream currentOpenAllChatsFile;
     std::fstream currentOpenAllPostsJson;
+
 
 
 
@@ -100,19 +103,32 @@ public:
 
 
     //functions for Friends:
-    static bool addFriend(std::string &, std::string &);
+    static void addFriend(std::string &, std::string &);
 
     void removeFriendFromOneList(std::string &, std::string &);
 
     void removeFriendFromBothLists(std::string &, std::string &);
 
+    static void removeFriendRequest (std::string &, std::string &);
+
     void changeFriendshipType(std::string &,std::string &, std::string &);
 
     static std::string createFriendListFileName (std::string &);
 
+    static std::string createFriendRequestsFileName (std::string &);
+
+    bool isFriend(std::string&, std::string &);
+
     std::fstream & getFriendListFile( std::string &);
 
+    std::fstream & getFriendRequestsFile( std::string &);
+
     static int getNumberOfFriends(std::string &);
+
+    static bool addFriendRequest (std::string &, std::string &); //parametru:requester, userul prietenului
+
+    void removeRequest (std::string&);
+
 
 
     //functions for Messages:
@@ -147,7 +163,7 @@ public:
     Socket getClientSocket(pthread_t) const;
 
     //functions for posts
-    std::vector <common::Post>  getAllPosts (std::string &username);
+    std::vector <common::Post>  getAllPosts (std::string &username, bool isAdmin);
 
     static std::vector <common::Post>  getAllPostsNotLoggedIn ();
 

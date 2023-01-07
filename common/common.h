@@ -32,9 +32,17 @@ namespace common {
 
         REQUEST_NEW_POST = 330,
 
+        REQUEST_SEND_FRIEND_REQUEST = 331,
+
+        REQUEST_ACCEPT_REQUEST = 332,
+
+        REQUEST_DENY_REQUEST = 333,
+
         REQUEST_ADD_FRIEND = 335,
 
         REQUEST_GET_FRIEND_LIST = 340,
+
+        REQUEST_GET_REQUESTS_LIST = 345,
 
         REQUEST_GET_NUMBER_OF_FRIENDS = 350,
 
@@ -75,11 +83,15 @@ namespace common {
 
         ADD_FRIENDS_REQUEST_SENT = 405,
 
+        ADD_FRIENDS_ADDED = 411,
+
         ADD_FRIENDS_INVALID_USER = 406,
 
         ADD_FRIENDS_ALREADY_FRIEND = 407,
 
         ADD_FRIENDS_OWN_USERNAME = 408,
+
+        ADD_FRIENDS_REQUEST_ALREADY_SENT= 409,
 
         PRIVACY_TYPE_PUBLIC = 410,
 
@@ -92,7 +104,8 @@ namespace common {
         friendFile = 1,
         chatFile = 2,
         allChatsFile = 3,
-        allPostsJson = 4
+        allPostsJson = 4,
+        requestsFile = 5
     };
 
     enum typesOfFriend : int

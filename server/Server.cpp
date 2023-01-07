@@ -37,7 +37,9 @@ static pthread_mutex_t  chatFileLock; //cand scriem/citim intr-un chat file
 static pthread_mutex_t  allChatsFileLock; //cand scriem/citim intr-un chat file
 static pthread_mutex_t  feedFileLock;
 static pthread_mutex_t  friendsFileLock;
+static pthread_mutex_t  friendRequestFileLock;
 static pthread_mutex_t  allPostsFileLock;
+
 //banuiesc ca o sa mai tb unul pt feed, pt cand scriem/citim din feed file?
 
 //creez un socket nou
@@ -296,31 +298,20 @@ std::string Server::createFriendListFileName(std::string &username) {
     return userFriendListFile;
 }
 
-bool Server::addFriend(std::string &requesterUsername, std::string &usernameAdded) {
+void Server::addFriend(std::string &requesterUsername, std::string &usernameAdded) {
     pthread_mutex_lock(&friendsFileLock);
 
  auto requesterFriendListFile = createFriendListFileName(requesterUsername);
 
-    auto otherFriendListFile =  createFriendListFileName(usernameAdded);
+ auto otherFriendListFile =  createFriendListFileName(usernameAdded);
 
  std::fstream friendListFile;
- //mai intai verific daca nu cumva il am deja ca
- //deschid fisierul normal, fara sa pot scrie in el
- friendListFile.open(requesterFriendListFile);
- std::string usernameFromFile, friendshipType; //1->normal, 2->close friend, 3->cunostinta
 
-    while (friendListFile >> usernameFromFile >> friendshipType)
-    {
-        if(usernameFromFile == usernameAdded) { //e deja in lista
-            friendListFile.close();
-            return false;
-        }
-    }
-    //daca nu l-am gasit, deschid fisierul cu append si il adaug
-    friendListFile.close();
-    friendListFile.open(requesterFriendListFile, std::iostream::app);
-    friendListFile << usernameAdded.c_str()<<' '<<common::typesOfFriend ::NORMAL_FRIEND <<'\n';
-    friendListFile.close();
+ friendListFile.open(requesterFriendListFile, std::iostream::app);
+
+ friendListFile << usernameAdded.c_str()<<' '<<common::typesOfFriend ::NORMAL_FRIEND <<'\n';
+
+ friendListFile.close();
 
     //deschid si fisierul de prieteni al prietenului tocmai adaugat, si adaug
     //usernameul celui care a dat request
@@ -329,7 +320,9 @@ bool Server::addFriend(std::string &requesterUsername, std::string &usernameAdde
     friendListFile <<requesterUsername.c_str()<<' '<<std::to_string(common::typesOfFriend ::NORMAL_FRIEND ).c_str()<<'\n';
     friendListFile.close();
     pthread_mutex_unlock(&friendsFileLock);
-    return true;
+
+    //sterg requestul
+     removeFriendRequest(requesterUsername, usernameAdded);
 }
 std::fstream & Server::getFriendListFile(std::string &username) {
     pthread_mutex_lock(&friendsFileLock);
@@ -440,6 +433,10 @@ void Server::releaseFile(int type) {
             pthread_mutex_unlock(&allPostsFileLock);
             this->currentOpenAllPostsJson.close();
             return ;
+        case 5://friend requests
+            pthread_mutex_unlock(&friendRequestFileLock);
+            this->currentOpenFriendRequestsFile.close();
+            return;
     }
 }
 
@@ -701,7 +698,11 @@ void Server::addPost(const std::string& username, const std::string& text, const
     buffer<<jsonFile.rdbuf();
     JsonObject db (buffer.str());
 
-    db.getArray("posts").pushBack(JsonObject().put("id",(int)db.size()+1).put("from", username.c_str())
+   auto & posts = db.getArray("posts");
+   auto lastPost = posts[(int)posts.size()-1];
+   auto lastIndex = lastPost.getJson().getInt("id");
+
+    db.getArray("posts").pushBack(JsonObject().put("id",lastIndex+1).put("from", username.c_str())
     .put("text", text.c_str())
     .put("visibleTo", visibleToWhom.c_str())
     .put("date", date.c_str()));
@@ -713,7 +714,7 @@ void Server::addPost(const std::string& username, const std::string& text, const
     jsonFile.close();
 }
 
-std::vector <common::Post> Server::getAllPosts(std::string & username) {
+std::vector <common::Post> Server::getAllPosts(std::string & username, bool isAdmin) {
     pthread_mutex_lock(&allPostsFileLock);
     auto db = cds::json::loadJson ( Server::pPostsJSONPath );
 
@@ -723,7 +724,8 @@ std::vector <common::Post> Server::getAllPosts(std::string & username) {
     {
         if (post.getJson().getString("visibleTo") == "0"|| //daca e postare publica
             post.getJson().getString("from") == username ||
-            userInGroupTarget(post.getJson().getString("from"), username,post.getJson().getString("visibleTo")))
+            userInGroupTarget(post.getJson().getString("from"), username,post.getJson().getString("visibleTo"))||
+            isAdmin)
 
         {
             vectorOfPosts.emplace_back(post.getJson().getString("from"), post.getJson().getString("text"),
@@ -800,6 +802,103 @@ void Server::removePost(int postID) {
     pthread_mutex_unlock(&allPostsFileLock);
     jsonFile.close();
 
+}
+
+bool Server::addFriendRequest(std::string &requesterUsername, std::string &usernameAdded) {
+    pthread_mutex_lock(&friendRequestFileLock);
+
+    auto usernameRequestsFile = createFriendRequestsFileName(usernameAdded);
+
+    std::fstream requestsFile;
+    requestsFile.open(usernameRequestsFile);
+
+    std::string usernameFromFile ;
+    while(requestsFile >>usernameFromFile)
+    {
+        if(usernameFromFile == requesterUsername) // s a trimis deja request
+        {
+            pthread_mutex_unlock(&friendRequestFileLock);
+            requestsFile.close();
+            return false;
+        }
+    }
+    requestsFile.close();
+    requestsFile.open(usernameRequestsFile, std::iostream::app);
+    requestsFile<<requesterUsername<<'\n';
+    requestsFile.close();
+    pthread_mutex_unlock(&friendRequestFileLock);
+    return true;
+}
+
+
+std::string Server ::createFriendRequestsFileName(std::string &username) {
+    auto userFriendRequestFile =  std::string(Server::pFriendRequestsFiles)
+            .append("/")
+            .append( username)
+            .append("_")
+            .append("FriendRequests")
+            .append( ".txt" );
+    return userFriendRequestFile;
+}
+
+bool Server::isFriend(std::string &requesterUsername, std::string &usernameAdded) {
+    pthread_mutex_lock(&friendsFileLock);
+
+    auto requesterFriendListFile = createFriendListFileName(requesterUsername);
+    std::fstream friendListFile;
+    //mai intai verific daca nu cumva il am deja ca
+    //deschid fisierul normal, fara sa pot scrie in el
+    friendListFile.open(requesterFriendListFile);
+    std::string usernameFromFile, friendshipType; //1->normal, 2->close friend, 3->cunostinta
+
+    while (friendListFile >> usernameFromFile >> friendshipType)
+    {
+        if(usernameFromFile == usernameAdded) { //e deja in lista
+            pthread_mutex_unlock(&friendsFileLock);
+            friendListFile.close();
+            return true;
+        }
+    }
+    friendListFile.close();
+    pthread_mutex_unlock(&friendsFileLock);
+    return false;
+}
+
+std::fstream &Server::getFriendRequestsFile(std::string &requesterUsername) {
+    pthread_mutex_lock(&friendRequestFileLock);
+
+    auto friendRequestsFileName = createFriendRequestsFileName(requesterUsername);
+    this->currentOpenFriendRequestsFile.open(friendRequestsFileName, std::fstream::in);
+
+    return this->currentOpenFriendRequestsFile;
+}
+
+void Server::removeFriendRequest(std::string &requesterUsername, std::string &usernameAdded) {
+    pthread_mutex_lock(&friendRequestFileLock);
+
+    auto requestFileName = createFriendRequestsFileName(requesterUsername);
+    std::fstream requestsFile ;
+
+    std::fstream newRequestsFile;
+    std::string newFileName = "new";//nu o sa ramana asa
+
+    requestsFile.open(requestFileName, std::fstream::in);
+    //creez un fisier intermediar in care copiez toate liniile
+    newRequestsFile.open("new", std::fstream::app);
+
+    std::string usernameFromFile;
+    while(requestsFile>>usernameFromFile)
+    {
+        if(usernameFromFile != usernameAdded)
+           newRequestsFile << usernameFromFile.c_str()<<'\n';
+    }
+
+   requestsFile.close();
+    newRequestsFile.close();
+    std::remove(requestFileName.c_str());
+    std::rename("new", requestFileName.c_str());
+
+    pthread_mutex_unlock(&friendRequestFileLock);
 }
 
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {

@@ -2,46 +2,25 @@
     "posts" : 
     [
         {
-            "id" : 1,
-            "from" : "user1",
-            "text" : "Prima postare",
-            "visibleTo" : "0",
-            "date" : "12:16     02.01.2023 "
-        },
-        {
-            "id" : 3,
+            "id" : 2,
             "from" : "user3",
             "text" : "ce postare misto rau",
             "visibleTo" : "2",
             "date" : "11:16     03.01.2023 "
         },
         {
-            "id" : 5,
+            "id" : 4,
             "from" : "user1",
-            "text" : "postare noua!",
-            "visibleTo" : "0",
-            "date" : "23:08,    03.01.2023 "
-        },
-        {
-            "id" : 9,
-            "from" : "vlad",
             "text" : "postez",
-            "visibleTo" : "0",
-            "date" : "23:58,    03.01.2023 "
+            "visibleTo" : "1",
+            "date" : "14:08,    04.01.2023 "
         },
         {
-            "id" : 2,
-            "from" : "user2",
-            "text" : "postare noua",
+            "id" : 6,
+            "from" : "user3",
+            "text" : "postez public",
             "visibleTo" : "0",
-            "date" : "02:57,    04.01.2023 "
-        },
-        {
-            "id" : 2,
-            "from" : "vlad",
-            "text" : "pentru close friends",
-            "visibleTo" : "2",
-            "date" : "03:34,    04.01.2023 "
+            "date" : "21:31,    07.01.2023 "
         }
     ]
 }
