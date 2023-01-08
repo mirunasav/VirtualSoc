@@ -21,6 +21,13 @@
             "text" : "postez public",
             "visibleTo" : "0",
             "date" : "21:31,    07.01.2023 "
+        },
+        {
+            "id" : 7,
+            "from" : "user1",
+            "text" : "postare cu enter\nsi cu slash /\n\tsi cu tab",
+            "visibleTo" : "0",
+            "date" : "17:06,    08.01.2023 "
         }
     ]
 }
