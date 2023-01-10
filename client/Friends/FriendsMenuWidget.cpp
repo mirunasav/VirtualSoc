@@ -8,6 +8,7 @@
 #include "FriendsList.h"
 #include "../LogInInterface/MainWindow.h"
 #include "FriendRequestsWidget.h"
+#include "BlockedListWidget.h"
 
 FriendsMenuWidget::FriendsMenuWidget(QWidget *pParentWindow)  :
         QWidget(pParentWindow ){
@@ -23,6 +24,7 @@ void FriendsMenuWidget::initWidget() {
     connect(this->pAddFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsAddFriends);
     connect(this->pMyFriendsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsFriendList);
     connect(this->pFriendRequestsButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsFriendRequests);
+    connect(this->pBlockedListButton, &QPushButton :: clicked,this, &FriendsMenuWidget::swapWidgetsBlockedList);
 
 }
 
@@ -45,6 +47,7 @@ void FriendsMenuWidget::createComponents() {
     this->pAddFriendsButton = new QPushButton(FriendsMenuWidget::pAddFriendsButtonText, this);
     this->pMyFriendsButton = new QPushButton(FriendsMenuWidget::pMyFriendsButtonText, this);
     this->pFriendRequestsButton = new QPushButton(FriendsMenuWidget::pFriendRequestsButtonText, this);
+    this->pBlockedListButton = new QPushButton(FriendsMenuWidget::pBlockedListButtonText, this);
 }
 
 void FriendsMenuWidget::settleLayouts() {
@@ -64,6 +67,7 @@ void FriendsMenuWidget::settleLayouts() {
     this->pButtonsLayout ->addWidget(this->pMyFriendsButton);
     this->pButtonsLayout ->addWidget(this->pAddFriendsButton);
     this->pButtonsLayout ->addWidget(this->pFriendRequestsButton);
+    this->pButtonsLayout ->addWidget(this->pBlockedListButton);
 
     this->pButtonsLayout->setContentsMargins( 0, MainWindow::HEIGHT/3,0,MainWindow::HEIGHT/2.5);
 }
@@ -107,6 +111,18 @@ void FriendsMenuWidget::swapWidgetsFriendRequests() {
 
     this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
     this->pFriendsLabel->setText(FriendsMenuWidget::pFriendRequestsButtonText);
+
+    pOldWidget->hide();
+    delete pOldWidget;
+}
+
+void FriendsMenuWidget::swapWidgetsBlockedList() {
+    QWidget *pOldWidget = this->pChangeableWidget;
+
+    this->pChangeableWidget = new BlockedListWidget(this);//new blocked list
+
+    this->pHorizontalSplitter->replaceWidget(1, this->pChangeableWidget);
+    this->pFriendsLabel->setText(FriendsMenuWidget::pBlockedListLabelText);
 
     pOldWidget->hide();
     delete pOldWidget;

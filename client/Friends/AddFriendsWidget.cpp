@@ -92,6 +92,12 @@ void AddFriendsWidget::onSendRequest() {
         case common::ServerResponse::ADD_FRIENDS_REQUEST_ALREADY_SENT:
             this->notificationPopUp(AddFriendsWidget::pRequestAlreadySent);
             break;
+        case common::ServerResponse::ADD_FRIENDS_USER_BLOCKED_YOU:
+            this->notificationPopUp(AddFriendsWidget::pUserBlockedYou);
+            break;
+        case common::ServerResponse::ADD_FRIENDS_USER_BLOCKED:
+            this->notificationPopUp(AddFriendsWidget::pUserBlockedByYou);
+            break;
     }
     this->pUsernameLineEdit->clear();
 }

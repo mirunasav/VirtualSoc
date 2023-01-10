@@ -20,6 +20,7 @@ private slots:
     void acquireRequestsList();
     void acceptRequest(const std::string &);
     void denyRequest(const std::string &);
+    void blockUser(const std::string &);
 public:
     explicit FriendRequestsWidget(QWidget *);
 

@@ -33,6 +33,15 @@ int RequestHandler::handleRequest( ClientThread  & client,  common::ClientReques
         case common::ClientRequests::REQUEST_GET_REQUESTS_LIST:
             RequestHandler::handleGetFriendRequestsList(client);
             return 200;
+        case common::ClientRequests::REQUEST_GET_BLOCKED_LIST:
+            RequestHandler::handleGetBlockedUsersList(client);
+            return 200;
+        case common::ClientRequests::REQUEST_BLOCK_USER:
+            RequestHandler::handleBlockUser(client);
+            return 200;
+        case common::ClientRequests::REQUEST_UNBLOCK_USER:
+            RequestHandler::handleUnblockUser(client);
+            return 200;
         case common::REQUEST_GET_NUMBER_OF_FRIENDS:
             RequestHandler::handleGetNumberOfFriends(client);
             return 200;
@@ -379,6 +388,17 @@ void RequestHandler::handleSendFriendRequest(ClientThread &client) {
             writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_ALREADY_FRIEND);
             return;
         }
+        if(Server::getInstance().isBlocked(requesterUsername, username))
+        {
+            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_USER_BLOCKED); //eu i am dat block
+            return;
+        }
+        if(Server::getInstance().isBlocked(username, requesterUsername))//eu am primit block
+        {
+            writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_USER_BLOCKED_YOU);
+            return;
+
+        }
 
         if( Server::getInstance().addFriendRequest(requesterUsername, username))
             writeResponse(client.clientSocket, common::ServerResponse::ADD_FRIENDS_REQUEST_SENT);
@@ -403,7 +423,7 @@ void RequestHandler::handleDenyRequest(ClientThread &client) {
     //sterge requestul din fisierul de requesturi
     auto requesterUsername =RequestHandler::getClientUsername(client);
     std::string username = common::readString(client.clientSocket);
-    Server::getInstance().removeFriendRequest(requesterUsername,username);
+    Server::removeFriendRequest(requesterUsername,username);
 }
 
 void RequestHandler::handleGetFriendRequestsList(ClientThread &client) {
@@ -411,7 +431,6 @@ void RequestHandler::handleGetFriendRequestsList(ClientThread &client) {
 
 
     std::fstream & requestsFile = Server::getInstance().getFriendRequestsFile(requesterUsername);
-    std::string username;
     std::string fileLine;
     std::list <std::string> friendRequests;
     while(std::getline(requestsFile, fileLine))
@@ -427,5 +446,39 @@ void RequestHandler::handleGetFriendRequestsList(ClientThread &client) {
         common::writeString(client.clientSocket, request);
     }
     Server::getInstance().releaseFile(common::typesOfFile::requestsFile);
+}
+
+void RequestHandler::handleGetBlockedUsersList(ClientThread &client) {
+    auto requesterUsername =RequestHandler::getClientUsername(client);//gasim usernameul celui care cere
+
+    std::fstream & blockedUsersFile = Server::getInstance().getBlockedUsersFile(requesterUsername);
+    std::string fileLine;
+    std::list <std::string> blockedUsers;
+    while(std::getline(blockedUsersFile, fileLine))
+    {
+        blockedUsers.push_back(fileLine);
+    }
+
+    int numberOfUsers= blockedUsers.size();
+
+    common::writeRequestNumber(client.clientSocket, numberOfUsers);
+    for (auto username : blockedUsers)
+    {
+        common::writeString(client.clientSocket, username);
+    }
+    Server::getInstance().releaseFile(common::typesOfFile::blockedUsersFile);
+}
+
+void RequestHandler::handleBlockUser(ClientThread &client) {
+    std::string usernameToBlock = common::readString(client.clientSocket);
+    auto requesterUsername = RequestHandler::getClientUsername(client);
+    Server::blockUser(requesterUsername, usernameToBlock);
+
+}
+
+void RequestHandler::handleUnblockUser(ClientThread &client) {
+    std::string usernameToUnblock = common::readString(client.clientSocket);
+    auto requesterUsername = RequestHandler::getClientUsername(client);
+    Server::unblockUser(requesterUsername, usernameToUnblock);
 }
 

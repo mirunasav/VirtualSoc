@@ -18,17 +18,21 @@ private:
 
     QPushButton *pAcceptButton {nullptr};
     QPushButton *pDenyButton {nullptr};
+    QPushButton *pBlockButton {nullptr};
 
     QLabel *pUsername {nullptr};
 private slots:
     void onAcceptClick();
     void onDenyClick();
+    void onBlockClick();
 signals:
     void accept(const std::string &);
     void deny(const std::string &);
+    void block(const std::string &);
 public:
     constexpr static const char *pAcceptButtonText = "Accept";
     constexpr static const char *pDenyButtonText= "Deny";
+    constexpr static const char *pBlockButtonText= "Block";
 
     explicit RequestItem (QWidget *, const std::string &);
 

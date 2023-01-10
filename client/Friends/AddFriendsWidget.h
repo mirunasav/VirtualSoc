@@ -36,6 +36,8 @@ public:
     constexpr static const char *pOwnUsername= "Error! You cannot enter your own username!";
     constexpr static const char *pUserAlreadyFriend= "Error! Username already in your friend List";
     constexpr static const char *pRequestAlreadySent= "Error! You already sent a friend request to this username";
+    constexpr static const char *pUserBlockedYou= "Error! You cannot send a request to this user";
+    constexpr static const char *pUserBlockedByYou= "Error! You have blocked this username";
     constexpr static const char *pRequestSentText= "Your Friend Request Has Been Sent!";
 
     explicit AddFriendsWidget (QWidget *pParentWindow);

@@ -18,6 +18,9 @@ public:
     static void handleGetNumberOfFriends (ClientThread & );
     static void handleGetFriendList (ClientThread & );
     static void handleGetFriendRequestsList (ClientThread & );
+    static void handleGetBlockedUsersList (ClientThread & );
+    static void handleBlockUser (ClientThread & );
+    static void handleUnblockUser (ClientThread & );
     static void handleRemoveFriend (ClientThread & );
     static void handleChangeFriendshipType (ClientThread & );
 

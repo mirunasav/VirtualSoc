@@ -79,6 +79,7 @@ void FriendRequestsWidget::addRequestToList(const std::string &username) {
     //signal : accept si deny
     connect(pWidget, SIGNAL(accept(const std::string &)), this, SLOT(acceptRequest(const std::string &)));
     connect(pWidget, SIGNAL(deny(const std::string &)), this, SLOT(denyRequest(const std::string &)));
+    connect(pWidget, SIGNAL(block(const std::string &)), this, SLOT(blockUser(const std::string &)));
 }
 
 void FriendRequestsWidget::clearList() {
@@ -104,6 +105,12 @@ void FriendRequestsWidget::acceptRequest(const std::string &usernameAdded) {
 void FriendRequestsWidget::denyRequest(const std::string &usernameDenied) {
     common::writeRequest(ServerConnection::getInstance().getSocket(),common::ClientRequests::REQUEST_DENY_REQUEST);
     common::writeString(ServerConnection::getInstance().getSocket(),usernameDenied);
+    this->refreshRequestsList();
+}
+
+void FriendRequestsWidget::blockUser(const std::string &usernameToBlock) {
+    common::writeRequest(ServerConnection::getInstance().getSocket(),common::ClientRequests::REQUEST_BLOCK_USER);
+    common::writeString(ServerConnection::getInstance().getSocket(),usernameToBlock);
     this->refreshRequestsList();
 }
 

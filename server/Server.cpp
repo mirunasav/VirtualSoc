@@ -39,6 +39,7 @@ static pthread_mutex_t  feedFileLock;
 static pthread_mutex_t  friendsFileLock;
 static pthread_mutex_t  friendRequestFileLock;
 static pthread_mutex_t  allPostsFileLock;
+static pthread_mutex_t  blockedUsersFileLock;
 
 //banuiesc ca o sa mai tb unul pt feed, pt cand scriem/citim din feed file?
 
@@ -104,6 +105,7 @@ void Server::init_mutex() {
     pthread_mutex_init ( & feedFileLock, nullptr );
     pthread_mutex_init ( & allChatsFileLock, nullptr );
     pthread_mutex_init ( & allPostsFileLock, nullptr );
+    pthread_mutex_init ( & blockedUsersFileLock, nullptr );
 }
 
 void Server::initSocket(short port, int queueSize) {
@@ -297,6 +299,16 @@ std::string Server::createFriendListFileName(std::string &username) {
             .append( ".txt" );
     return userFriendListFile;
 }
+std::string Server::createBlockedUsersFileName(std::string &username) {
+    auto blockedUsersFile =  std::string(Server::pBlockedUsersFiles)
+            .append("/")
+            .append( username)
+            .append("_")
+            .append("BlockedUsers")
+            .append( ".txt" );
+    return blockedUsersFile;
+}
+
 
 void Server::addFriend(std::string &requesterUsername, std::string &usernameAdded) {
     pthread_mutex_lock(&friendsFileLock);
@@ -332,6 +344,15 @@ std::fstream & Server::getFriendListFile(std::string &username) {
 
     return this->currentOpenFriendFile;
 }
+std::fstream &Server::getBlockedUsersFile(std::string &username) {
+    pthread_mutex_lock(&blockedUsersFileLock);
+
+    auto blockedUsersFileName = createBlockedUsersFileName(username);
+    this->currentOpenBlockedUsersFile.open(blockedUsersFileName, std::fstream::in);
+
+    return this->currentOpenBlockedUsersFile;
+}
+
 
 int Server::getNumberOfFriends(std::string &username) {
     pthread_mutex_lock(&friendsFileLock);
@@ -436,6 +457,10 @@ void Server::releaseFile(int type) {
         case 5://friend requests
             pthread_mutex_unlock(&friendRequestFileLock);
             this->currentOpenFriendRequestsFile.close();
+            return;
+        case 6: //blocked users
+            pthread_mutex_unlock(&blockedUsersFileLock);
+            this->currentOpenBlockedUsersFile.close();
             return;
     }
 }
@@ -863,6 +888,28 @@ bool Server::isFriend(std::string &requesterUsername, std::string &usernameAdded
     pthread_mutex_unlock(&friendsFileLock);
     return false;
 }
+bool Server::isBlocked(std::string &usernameWhoBlocks, std::string &usernameWhoTries) {
+    pthread_mutex_lock(&blockedUsersFileLock);
+
+    auto blockedListFileName = createBlockedUsersFileName(usernameWhoBlocks);
+    std::fstream blockedListFile;
+    //mai intai verific daca nu cumva il am deja ca
+    //deschid fisierul normal, fara sa pot scrie in el
+    blockedListFile.open(blockedListFileName);
+    std::string usernameFromFile;
+
+    while (blockedListFile >> usernameFromFile )
+    {
+        if(usernameFromFile == usernameWhoTries) { //e deja in lista
+            pthread_mutex_unlock(&blockedUsersFileLock);
+            blockedListFile.close();
+            return true;
+        }
+    }
+    blockedListFile.close();
+    pthread_mutex_unlock(&blockedUsersFileLock);
+    return false;
+}
 
 std::fstream &Server::getFriendRequestsFile(std::string &requesterUsername) {
     pthread_mutex_lock(&friendRequestFileLock);
@@ -900,6 +947,58 @@ void Server::removeFriendRequest(std::string &requesterUsername, std::string &us
 
     pthread_mutex_unlock(&friendRequestFileLock);
 }
+
+void Server::blockUser(std::string &usernameWhoBlocks, std::string &usernameBlocked) {
+    pthread_mutex_lock(&blockedUsersFileLock);
+
+    auto blockedUsersFileName = createBlockedUsersFileName(usernameWhoBlocks);
+
+    std::fstream blockedListFile;
+
+    blockedListFile.open(blockedUsersFileName, std::iostream::app);
+
+    blockedListFile << usernameBlocked.c_str()<<'\n';
+
+    blockedListFile.close();
+
+    //deschid si fisierul de prieteni al prietenului tocmai adaugat, si adaug
+    //usernameul celui care a dat request
+
+    pthread_mutex_unlock(&blockedUsersFileLock);
+
+    //sterg requestul
+    removeFriendRequest(usernameWhoBlocks,usernameBlocked );
+}
+
+void Server::unblockUser(std::string &usernameWhoUnblocks, std::string &usernameUnblocked) {
+    pthread_mutex_lock(&blockedUsersFileLock);
+
+    auto blockedUsersFileName = createBlockedUsersFileName(usernameWhoUnblocks);
+    std::fstream blockedUsersFile ;
+
+    std::fstream newBlockedUsersFile;
+    std::string newBlockedUsersFileName = "new";//nu o sa ramana asa
+
+    blockedUsersFile.open(blockedUsersFileName, std::fstream::in);
+    //creez un fisier intermediar in care copiez toate liniile
+    newBlockedUsersFile.open("new", std::fstream::app);
+
+    std::string usernameFromFile;
+    while(blockedUsersFile>>usernameFromFile)
+    {
+        if(usernameFromFile != usernameUnblocked)
+           newBlockedUsersFile  << usernameFromFile.c_str()<<'\n';
+    }
+
+    blockedUsersFile.close();
+    newBlockedUsersFile.close();
+    std::remove(blockedUsersFileName.c_str());
+    std::rename("new", blockedUsersFileName.c_str());
+
+    pthread_mutex_unlock(&blockedUsersFileLock);
+}
+
+
 
 bool Server::ConnectedClientData::operator==(const Server::ConnectedClientData &other) const {
     return this->threadID == other.threadID;

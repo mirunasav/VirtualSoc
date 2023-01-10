@@ -52,6 +52,7 @@ private:
     constexpr static const char * pAllChatsFile= "../server/chat_files/all_chats.txt";
     constexpr static const char * pChatsPath= "../server/chat_files/";
     constexpr static const char * pPostsJSONPath= "../server/posts/all_posts.json";
+    constexpr static const char * pBlockedUsersFiles= "../server/blocked_users_files";
 
     Server () noexcept = default;
     //instanta a serverului
@@ -67,6 +68,7 @@ private:
     std::fstream currentOpenChatFile;
     std::fstream currentOpenAllChatsFile;
     std::fstream currentOpenAllPostsJson;
+    std::fstream currentOpenBlockedUsersFile;
 
 
 
@@ -105,6 +107,10 @@ public:
     //functions for Friends:
     static void addFriend(std::string &, std::string &);
 
+    static void blockUser(std::string &, std::string &);
+
+    static void unblockUser(std::string &, std::string &);
+
     void removeFriendFromOneList(std::string &, std::string &);
 
     void removeFriendFromBothLists(std::string &, std::string &);
@@ -115,19 +121,23 @@ public:
 
     static std::string createFriendListFileName (std::string &);
 
-    static std::string createFriendRequestsFileName (std::string &);
+    static std::string createFriendRequestsFileName (std::string &);\
+
+    static std::string createBlockedUsersFileName (std::string &);
 
     bool isFriend(std::string&, std::string &);
+
+    bool isBlocked(std::string&, std::string &);
 
     std::fstream & getFriendListFile( std::string &);
 
     std::fstream & getFriendRequestsFile( std::string &);
 
+    std::fstream & getBlockedUsersFile( std::string &);
+
     static int getNumberOfFriends(std::string &);
 
     static bool addFriendRequest (std::string &, std::string &); //parametru:requester, userul prietenului
-
-    void removeRequest (std::string&);
 
 
 

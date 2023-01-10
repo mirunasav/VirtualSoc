@@ -51,7 +51,7 @@ add_executable(client client/LogInInterface/MainWindow.cpp
         client/Messenger/ChatWidget.h
         client/Messenger/AllMessagesWidget.cpp
         client/Messenger/AllMessagesWidget.h
-        client/Posts/NewPostWidget.cpp client/Posts/NewPostWidget.h client/Posts/PostWidget.cpp client/Posts/PostWidget.h client/Friends/FriendRequestsWidget.cpp client/Friends/FriendRequestsWidget.h client/Friends/RequestItem.cpp client/Friends/RequestItem.h)
+        client/Posts/NewPostWidget.cpp client/Posts/NewPostWidget.h client/Posts/PostWidget.cpp client/Posts/PostWidget.h client/Friends/FriendRequestsWidget.cpp client/Friends/FriendRequestsWidget.h client/Friends/RequestItem.cpp client/Friends/RequestItem.h client/Friends/BlockedListWidget.cpp client/Friends/BlockedListWidget.h client/Friends/BlockedItem.cpp client/Friends/BlockedItem.h)
 add_executable(server server/Server.cpp
         server/Server.h
         server/ClientThread.cpp

@@ -44,6 +44,12 @@ namespace common {
 
         REQUEST_GET_REQUESTS_LIST = 345,
 
+        REQUEST_GET_BLOCKED_LIST = 346,
+
+        REQUEST_BLOCK_USER= 347,
+
+        REQUEST_UNBLOCK_USER= 348,
+
         REQUEST_GET_NUMBER_OF_FRIENDS = 350,
 
         REQUEST_REMOVE_FRIEND = 360,
@@ -93,6 +99,10 @@ namespace common {
 
         ADD_FRIENDS_REQUEST_ALREADY_SENT= 409,
 
+        ADD_FRIENDS_USER_BLOCKED= 413,
+
+        ADD_FRIENDS_USER_BLOCKED_YOU= 414,
+
         PRIVACY_TYPE_PUBLIC = 410,
 
         PRIVACY_TYPE_PRIVATE = 411,
@@ -105,7 +115,8 @@ namespace common {
         chatFile = 2,
         allChatsFile = 3,
         allPostsJson = 4,
-        requestsFile = 5
+        requestsFile = 5,
+        blockedUsersFile = 6
     };
 
     enum typesOfFriend : int
