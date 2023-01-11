@@ -25,7 +25,6 @@ void ClientThread::main() {
     {
             status_code = RequestHandler::handleRequest(* this, common::readRequest(this->clientSocket));
         //pot pune intr-un bloc de try si vom arunca exceptii in cas ca apar erori la read/write sau la conexiune
-
     }
     this->disconnectThread();
 }

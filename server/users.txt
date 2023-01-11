@@ -1,4 +1,4 @@
-user1 parola1 1
+user1 parola1 0
 user2 parola2 1
 user3 parola3 1
 user4 parola4 0

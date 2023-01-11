@@ -28,6 +28,20 @@
             "text" : "postare cu enter\nsi cu slash /\n\tsi cu tab",
             "visibleTo" : "0",
             "date" : "17:06,    08.01.2023 "
+        },
+        {
+            "id" : 8,
+            "from" : "user1",
+            "text" : "postare publica\n\n\n",
+            "visibleTo" : "0",
+            "date" : "12:48,    11.01.2023 "
+        },
+        {
+            "id" : 9,
+            "from" : "user2",
+            "text" : "postez pt acq",
+            "visibleTo" : "3",
+            "date" : "12:49,    11.01.2023 "
         }
     ]
 }

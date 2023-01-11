@@ -48,7 +48,7 @@ static pthread_mutex_t  blockedUsersFileLock;
 auto Server:: newSocket()
 {
     Socket s;
-    s = socket(AF_INET, SOCK_STREAM, PF_UNSPEC);
+    s = socket(AF_INET, SOCK_STREAM, PF_UNSPEC);//pf_unspec e de fapt 0
 
     if(s == INVALID_SOCKET)
        errors::throwException(errors::errorAtSocketInitialization);
@@ -65,7 +65,7 @@ auto Server::reuseAddress(Socket s) {
 
 auto Server::bindSocket(Socket s, short port) {
     sockaddr_in serverAddressInformation {};
-    serverAddressInformation.sin_addr.s_addr    = htonl ( INADDR_ANY );
+    serverAddressInformation.sin_addr.s_addr    = htonl ( INADDR_ANY );//adresa ip locala
     serverAddressInformation.sin_port           = htons ( port );
     serverAddressInformation.sin_family         = AF_INET;
 
@@ -149,7 +149,8 @@ void Server::run() {
          auto clientThreadData = new clientThreadInitStruct;
 
          clientThreadData->clientSocket = newClientData.socket;
-
+            //threadId, atributele noului thread creat, functia ce va fi executata de thread,
+            // argumentul ce va fi trimit functiei (de tip void, tb castat dupa)
          pthread_create(& clientThreadData->clientThreadID, nullptr, clientThreadInit,  clientThreadData);
 
          newClientData.threadID = clientThreadData->clientThreadID;

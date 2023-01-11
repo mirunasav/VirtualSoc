@@ -3,3 +3,4 @@
  < user1 >  hello
  < vlad >  mesaj
  < user1 >  mesaj nou
+ < user1 >  ok

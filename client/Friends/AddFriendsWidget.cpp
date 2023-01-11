@@ -38,10 +38,9 @@ void AddFriendsWidget::createComponents() {
     this->pMainLayout->setAlignment(Qt::AlignCenter);
     this->pButtonLayout->setAlignment(Qt::AlignRight);
 
-    this->pSendRequestLayout->setAlignment(Qt::AlignCenter);
+    this->pSendRequestLayout->setAlignment(this->pLineEditLayout,Qt::AlignCenter);
     this->pSendRequestLayout->setContentsMargins(MainWindow::WIDTH / 10, 0, MainWindow::WIDTH / 10, 0);
-    this->pUsernameLineEdit->setMaximumWidth(300);
-    this->pLineEditLayout->setAlignment(this->pUsernameLineEdit, Qt::AlignCenter);
+    this->pLineEditLayout->setAlignment(this->pSearchUsernameLabel, Qt::AlignLeft);
 
 
 }
